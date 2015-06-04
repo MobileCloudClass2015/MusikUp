@@ -1,11 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
+    android:background="#288cff"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
     <LinearLayout
-        android:background="#ffffff"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
@@ -17,8 +16,11 @@
             android:padding="10dp"
             android:layout_alignParentBottom="true">
 
-            <ImageButton
-                android:background="#00bbaa"
+            <Button
+                android:background="#ffffff"
+                android:textColor="#288cff"
+                android:textSize="30dp"
+                android:text="Sign in"
                 android:id="@+id/registrationBtn"
                 android:layout_width="250dp"
                 android:layout_height="60dp"
@@ -29,13 +31,15 @@
         </LinearLayout>
     </LinearLayout>
 
-    <ImageView
-        android:background="#ff00ff"
+    <TextView
+        android:textColor="#ffffff"
+        android:text="Musikup"
+        android:textSize="70dp"
         android:id="@+id/smart"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="100dp"
         android:layout_marginTop="80dp"
         android:gravity="center_horizontal" />
 
@@ -48,28 +52,33 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
-        <ImageButton
-            android:background="#f0b0aa"
+        <Button
+            android:background="#ffffff"
+            android:text="Login"
+            android:textColor="#288cff"
+            android:textSize="20dp"
             android:id="@+id/loginBtn"
             android:layout_width="90dp"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:layout_alignWithParentIfMissing="false"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/idEntry"
             android:layout_toEndOf="@+id/idEntry"
             android:layout_marginLeft="5dp" />
 
-        <ImageView
-            android:background="#aabbcc"
+        <TextView
+            android:textColor="#ffffff"
+            android:text=" ID"
+            android:textSize="30dp"
             android:id="@+id/userIDLabel"
             android:layout_width="50dp"
-            android:layout_height="30dp"
+            android:layout_height="35dp"
             android:layout_alignTop="@+id/loginBtn"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <EditText
-            android:background="#aabbcc"
+            android:background="#ffffff"
             android:id="@+id/idEntry"
             android:layout_width="130dp"
             android:layout_height="35dp"
@@ -77,16 +86,19 @@
             android:layout_above="@+id/pwdLabel"
             android:layout_toRightOf="@+id/userIDLabel"
             android:layout_toEndOf="@+id/userIDLabel" />
-        <ImageView
-            android:background="#aaeebb"
+
+        <TextView
+            android:textColor="#ffffff"
+            android:text="PW"
+            android:textSize="30dp"
             android:id="@+id/pwdLabel"
             android:layout_width="50dp"
-            android:layout_height="30dp"
+            android:layout_height="35dp"
             android:layout_below="@id/userIDLabel"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="10dp"/>
 
         <EditText
-            android:background="#aaeebb"
+            android:background="#ffffff"
             android:id="@+id/pwdEntry"
             android:layout_width="130dp"
             android:layout_height="35dp"

@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import java.io.BufferedInputStream;
@@ -19,7 +19,7 @@ public class LoginActivity extends Activity {
 
     public static final int REQUEST_CODE_REGISTER = 1004;
 
-    ImageButton loginBtn, registrationBtn;
+    Button loginBtn, registrationBtn;
     EditText idEntry,pwdEntry;
     String[] userData;
 
@@ -34,7 +34,7 @@ public class LoginActivity extends Activity {
     }
 
     private void buttonEventHandle(){ //각 button의 동작
-        loginBtn = (ImageButton) findViewById(R.id.loginBtn);
+        loginBtn = (Button) findViewById(R.id.loginBtn);
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +57,7 @@ public class LoginActivity extends Activity {
             }
         });
 
-        registrationBtn = (ImageButton) findViewById(R.id.registrationBtn);
+        registrationBtn = (Button) findViewById(R.id.registrationBtn);
         registrationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
