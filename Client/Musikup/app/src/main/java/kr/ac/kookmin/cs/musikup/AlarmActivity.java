@@ -64,15 +64,18 @@ public class AlarmActivity extends Activity {
                     // TODO Auto-generated method stub
                     mHour = hourOfDay;
                     mMinute = minute;
+
                     updateDisplay();
                 }
             };
-    
+
     @Override
     protected Dialog onCreateDialog(int id){
         switch (id) {
             case TIME_DIALOG_ID:
-                return new TimePickerDialog(this, mTimeSetListener, mHour, mMinute, false);
+                TimePickerDialog mTimPickerDialog = new TimePickerDialog(this, mTimeSetListener, mHour, mMinute, false);
+                mTimPickerDialog.setTitle("알림 시간 설정");
+                return mTimPickerDialog;
         }
         return null;
     }
