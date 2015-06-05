@@ -7,19 +7,18 @@
     <TextView
         android:id="@+id/main"
         android:layout_centerHorizontal="true"
-        android:layout_width="300dp"
+        android:layout_width="wrap_content"
         android:layout_height="100dp"
-        android:text=" Musikup"
+        android:text="Musikup"
         android:textSize="70dp"
         android:textColor="#ffffff"
         android:layout_marginTop="150dp"/>
 
-    <TextView
-        android:layout_centerHorizontal="true"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:text="    :  나를 깨워줘 >.<!!"
-        android:textSize="30dp"
-        android:textColor="#ffffff"
-        android:layout_below="@id/main"/>
+    <!--<TextView-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_width="300dp"-->
+        <!--android:layout_height="300dp"-->
+        <!--android:textSize="30dp"-->
+        <!--android:textColor="#ffffff"-->
+        <!--android:layout_below="@id/main"/>-->
 </RelativeLayout>
