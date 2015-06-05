@@ -86,7 +86,7 @@ public class RegistrationActivity extends Activity {
                 instream = new BufferedInputStream(socket.getInputStream());
                 System.out.println("Instream OK");
 
-                //"r" registration header  ; r+id+pwd+name+age+sex
+                //"r" registration header  ; r+id+pwd
                 String data = "r".concat("+").concat(id).concat("+").concat(pwd);
                 byte[] ref = data.getBytes("UTF-8");
 

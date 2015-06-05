@@ -2,23 +2,52 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#288cff">
+    android:background="#ffffff">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#288cff">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:textSize="40dp"
+            android:text="Musikup"
+            android:textColor="#ffffff"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"/>
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/setAlarmButton"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="50dp"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:textSize="25dp"
+        android:text="알림등록"
+        android:textColor="#ffffff"
+        android:background="#288cff"/>
+
+
+    <Button
+        android:id="@+id/cancelAlarmButton"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@+id/setAlarmButton"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:textSize="25dp"
+        android:text="알림해지"
+        android:textColor="#ffffff"
+        android:background="#288cff"/>
 
     <TextView
-        android:id="@+id/main"
-        android:layout_centerHorizontal="true"
         android:layout_width="300dp"
-        android:layout_height="100dp"
-        android:text=" Musikup"
-        android:textSize="70dp"
-        android:textColor="#ffffff"
-        android:layout_marginTop="150dp"/>
-
-    <TextView
+        android:layout_height="50dp"
         android:layout_centerHorizontal="true"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:textSize="30dp"
-        android:textColor="#ffffff"
-        android:layout_below="@id/main"/>
+        android:id="@+id/timePick"
+        android:layout_below="@+id/cancelAlarmButton"
+        android:layout_marginTop="20dp"/>
 </RelativeLayout>
