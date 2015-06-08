@@ -1,24 +1,61 @@
 package kr.ac.kookmin.musikupseed;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    Spinner listArtists = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        List<String> artists = getArtists();
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, artists);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.activity_main, artists);
+        listArtists = (Spinner) findViewById(R.id.spinner);
+        //setListAdapter(adapter);
+        listArtists.setAdapter(adapter);
     }
 
-    public void onButtonClicked (View v) {
-        Intent intent = new Intent(getApplicationContext(), SeedActivity.class);
-        startActivity(intent);
+    public List<String> getArtists() {
+        List<String> list = new ArrayList<String>();
+        String[] cursorColumns = new String[] {
+                MediaStore.Audio.Artists._ID,
+                MediaStore.Audio.Artists.ARTIST
+        };
+        Cursor cursor = (Cursor) getContentResolver().query(
+                MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
+                cursorColumns, null, null, null);
+
+        if (cursor == null) {
+            return list;
+        }
+        if (cursor.moveToFirst()) {
+            int idColumn = cursor.getColumnIndex(MediaStore.Audio.Artists._ID);
+            int artistColumn = cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST);
+            do
+            {
+                String artist = cursor.getString(artistColumn);
+                list.add(artist);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return list;
     }
 
     @Override
