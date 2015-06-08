@@ -2,17 +2,19 @@ package kr.ac.kookmin.cs.musikup;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.net.Socket;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class LoginActivity extends Activity {
@@ -21,12 +23,15 @@ public class LoginActivity extends Activity {
 
     Button loginBtn, registrationBtn;
     EditText idEntry,pwdEntry;
-    String[] userData;
+    String id, pwd;
+    List<NameValuePair> params;
+    ServerRequest sr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        sr = new ServerRequest();
 
         idEntry = (EditText) findViewById(R.id.idEntry);
         pwdEntry = (EditText) findViewById(R.id.pwdEntry);
@@ -50,7 +55,7 @@ public class LoginActivity extends Activity {
                     showMessage("비밀번호를 입력하세요.");
                 }
                 else {
-                    new loginTask().execute();
+                    loginTask();
                 }
 
 
@@ -68,107 +73,32 @@ public class LoginActivity extends Activity {
 
     }
 
-    private class loginTask extends AsyncTask<Void, Void, Character> {
-        private String id, pwd;
-        private char state;
-        private Socket socket;
-        private BufferedOutputStream outstream;
-        private BufferedInputStream instream;
+    private void loginTask() {
 
-        public loginTask() {
-            this.id = idEntry.getText().toString();
-            this.pwd = pwdEntry.getText().toString();
-            this.state = 'n';
-        }
-
-        @Override
-        protected Character doInBackground(Void... params) {
-
-            try {
-                //connect
-                socket = new Socket("52.68.250.226", 8000);
-                System.out.println("Socket OK");
-                outstream = new BufferedOutputStream(socket.getOutputStream());
-                System.out.println("Outstream OK");
-                instream = new BufferedInputStream(socket.getInputStream());
-                System.out.println("Instream OK");
-
-                //"l" login header
-                String sendData = "l".concat("+").concat(id).concat("+").concat(pwd); //데이터스트링
-                byte[] ref = sendData.getBytes("UTF-8"); //바이트배열로 변환
-
-                System.out.println("Byte alloc OK");
-                outstream.write(ref); // 서버에 변환된 데이터스트링 보냄
-                outstream.flush();
-
-                byte[] contents = new byte[1024]; //서버에서 보낸 데이터 받을 공간
-                int bytesRead = 0;
-                String str = null;
-
-                bytesRead = instream.read(contents);
-                System.out.println("byte:" + bytesRead);
-
-                if (bytesRead != -1)
-                    str = new String(contents, 0, bytesRead); //바이트 스트링으로 변환
-                if (str != null) {
-                    System.out.println("Received data : " + str);
-
-                    if (str.charAt(0) == 'l') {
-                        String[] receiveData = str.split(",");
-                        state = receiveData[0].charAt(0);
-
-                    } else {
-                        state = str.charAt(0);
-                    }
+        id = idEntry.getText().toString();
+        pwd = pwdEntry.getText().toString();
+        params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("email", id));
+        params.add(new BasicNameValuePair("password", pwd));
+        ServerRequest sr = new ServerRequest();
+        JSONObject json = sr.getJSON("http://52.68.250.226:3000/login",params); //send id,pwd info
+        if(json != null){
+            try{
+                String jsonstr = json.getString("response");
+                if(json.getBoolean("res")){ //login success
+                    Intent intent = new Intent(LoginActivity.this, AlarmActivity.class);
+                    startActivity(intent);
+                    finish();
                 }
 
+                showMessage(jsonstr);
 
-            } catch (Exception e) {
-                this.state = 'n';
-                e.printStackTrace();
-            }
-
-            System.out.println("success");
-            System.out.println(getStat());
-
-            return getStat();
-        }
-
-        @Override
-        protected void onPostExecute(Character stat) {
-            if(stat == 'l'){
-                socketClose();
-
-                System.out.println("Success");
-                showMessage("로그인에 성공하였습니다.");
-
-                Intent intent = new Intent(getApplicationContext(), AlarmActivity.class);
-                startActivity(intent);
-                finish();
-
-            }
-            else if(stat == 'f'){
-                System.out.println("Failed : DB");
-                showMessage("ID와 비밀번호를 다시 확인하세요.");
-            }
-            else if(stat == 'n'){
-                System.out.println("Failed : disconnection");
-                showMessage("Sever disconnection.");
-            }
-        }
-
-        public char getStat() {
-            return this.state;
-        }
-
-        public void socketClose() {
-            try {
-                socket.close();
-            } catch(IOException e) {
+            }catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
+
 
     private void showMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();

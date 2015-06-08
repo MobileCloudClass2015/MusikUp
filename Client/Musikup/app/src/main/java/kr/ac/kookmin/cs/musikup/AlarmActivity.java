@@ -1,6 +1,7 @@
 package kr.ac.kookmin.cs.musikup;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import java.util.Calendar;
 
 
 public class AlarmActivity extends Activity {
+    AlarmManager mAlarmMgr;
+
     private Button setAlarmBtn, cancelAlarmBtn;
     private TextView mTimeDisplay;
 
@@ -25,6 +28,7 @@ public class AlarmActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
+        mAlarmMgr = (AlarmManager)getSystemService(ALARM_SERVICE);
 
         mTimeDisplay = (TextView)findViewById(R.id.timePick);
         setAlarmBtn = (Button)findViewById(R.id.setAlarmButton);

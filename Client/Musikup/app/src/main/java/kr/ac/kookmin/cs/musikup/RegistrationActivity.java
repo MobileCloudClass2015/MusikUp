@@ -2,21 +2,24 @@ package kr.ac.kookmin.cs.musikup;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.net.Socket;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class RegistrationActivity extends Activity {
     String id,pwd,rePwd = "";
+    List<NameValuePair> params;
     Button RegistrationBtn;
 
     @Override
@@ -57,92 +60,33 @@ public class RegistrationActivity extends Activity {
                 }
 
                 else {
-                    new registerTask().execute();
+                    registerTask();
                 }
             }
         });
+
     }
 
-    private class registerTask extends AsyncTask<Void, Void, Character> {
+    public void registerTask(){
+        params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("email", id));
+        params.add(new BasicNameValuePair("password", pwd));
+        ServerRequest sr = new ServerRequest();
+        JSONObject json = sr.getJSON("http://52.68.250.226:3000/register",params);
 
-        private char state;
-        private Socket socket;
-        private BufferedOutputStream outstream;
-        private BufferedInputStream instream;
+        if(json != null){
+            try{
+                String jsonstr = json.getString("response");
+                if(json.getBoolean("res")){ //register success
+                    Intent myIntent = new Intent();
+                    myIntent.putExtra("user_id", id); //send user id to login activity
+                    setResult(RESULT_OK, myIntent);
+                    finish();
+                }
 
-        public registerTask() {
-            this.state = 'n';
-        }
+                showMessage(jsonstr);
 
-        @Override
-        protected Character doInBackground(Void... params) {
-
-            try {
-                //connect
-                socket = new Socket("52.68.250.226", 8000);
-                System.out.println("Socket OK");
-                outstream = new BufferedOutputStream(socket.getOutputStream());
-                System.out.println("Outstream OK");
-                instream = new BufferedInputStream(socket.getInputStream());
-                System.out.println("Instream OK");
-
-                //"r" registration header  ; r+id+pwd
-                String data = "r".concat("+").concat(id).concat("+").concat(pwd);
-                byte[] ref = data.getBytes("UTF-8");
-
-                System.out.println("Byte alloc OK");
-                outstream.write(ref);
-                outstream.flush();
-
-                int stat = instream.read();
-                System.out.println("Stat is : " + stat);
-                if(stat != -1)
-                    this.state = (char)stat;
-
-            } catch (Exception e) {
-                this.state = 'n';
-                e.printStackTrace();
-            }
-
-            System.out.println("receive");
-            System.out.println(getStat());
-
-            return getStat();
-        }
-
-        @Override
-        protected void onPostExecute(Character stat) {
-            if(stat == 'r'){
-                socketClose();
-                System.out.println("Success");
-                showMessage("회원가입에 성공하였습니다.");
-                Intent myIntent = new Intent();
-                myIntent.putExtra("user_id", getId());
-                setResult(RESULT_OK, myIntent);
-                finish();
-            }
-            else if(stat == 'f'){
-                System.out.println("Failed : DB");
-                showMessage("이미 사용중인 ID입니다. 다시 입력하세요.");
-            }
-            else if(stat == 'n'){
-                System.out.println("Failed : disconnection");
-                showMessage("Sever disconnection.");
-            }
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public char getStat() {
-            return this.state;
-        }
-
-        public void socketClose() {
-            try {
-                socket.close();
-            } catch(IOException e) {
+            }catch (JSONException e) {
                 e.printStackTrace();
             }
         }
