@@ -57,13 +57,16 @@ public class MainActivity extends ActionBarActivity {
 
         mListView.setAdapter(mMusicAdapter);
 
+        System.out.println("1");
         /* Listener for selecting a item */
         mListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
-                Uri musicURI = Uri.withAppendedPath(
-                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "" + mMusicAdapter.getMusicID(position));
 
-                playMusic(musicURI);
+                String musicInfoSeed = null;
+                String title = mMusicAdapter.getTitle(position);
+                String singer = mMusicAdapter.getSinger(position);
+                musicInfoSeed = title + " "  + singer;
+                System.out.println(musicInfoSeed);
             }
         });
 
@@ -76,43 +79,6 @@ public class MainActivity extends ActionBarActivity {
         mMediaPlayer.reset();
         mMediaPlayer.release();
         mMediaPlayer = null;
-    }
-
-    public void playMusic(Uri uri) {
-        try {
-            mMediaPlayer.reset();
-            mMediaPlayer.setDataSource(this, uri);
-            mMediaPlayer.prepare();
-            mMediaPlayer.start();
-
-            mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-                public void onCompletion(MediaPlayer mp) {
-                    // TODO
-                    // Do something when playing is completed
-                }
-            });
-
-        } catch (IOException e) {
-            Log.v("SimplePlayer", e.getMessage());
-        }
-    }
-
-    public void playMusic(String path) {
-        try {
-            mMediaPlayer.reset();
-            mMediaPlayer.setDataSource(path);
-            mMediaPlayer.prepare();
-            mMediaPlayer.start();
-
-            mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
-                public void onCompletion(MediaPlayer mp) {
-                    // Do something when playing is completed
-                }
-            });
-
-        } catch (IOException e) {
-            Log.v("SimplePlayer", e.getMessage());
-        }
     }
 
 
@@ -155,6 +121,14 @@ public class MainActivity extends ActionBarActivity {
 
         public int getMusicID(int position) {
             return Integer.parseInt((mMusicIDList.get(position)));
+        }
+
+        public String getTitle(int position){
+            return mMusiceTitleList.get(position);
+        }
+
+        public String getSinger(int position){
+            return mSingerList.get(position);
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
