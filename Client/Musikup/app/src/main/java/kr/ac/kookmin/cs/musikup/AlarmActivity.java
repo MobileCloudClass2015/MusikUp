@@ -41,10 +41,10 @@ public class AlarmActivity extends Activity {
             }
         });
 
-        final Calendar c = Calendar.getInstance();
-        mHour = c.get(Calendar.HOUR_OF_DAY);
-        mMinute = c.get(Calendar.MINUTE);
-        updateDisplay();
+        Calendar cal = Calendar.getInstance();
+
+
+
     }
 
     private void updateDisplay() {
