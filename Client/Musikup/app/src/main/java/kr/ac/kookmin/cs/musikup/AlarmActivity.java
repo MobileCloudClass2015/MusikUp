@@ -3,63 +3,72 @@ package kr.ac.kookmin.cs.musikup;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
-import java.util.Calendar;
+import android.widget.ToggleButton;
 
 
 public class AlarmActivity extends Activity {
+    final Context mContext = this;
     AlarmManager mAlarmMgr;
     Dialog customDialog;
     TimePicker timePicker;
-    private Button setAlarmBtn, cancelAlarmBtn;
-    private TextView mTimeDisplay;
-
-    private int mHour, mMinute;
-
-    //static final int TIME_DIALOG_ID = 0;
-    final Context mContext = this;
+    Button setAlarmBtn, cancelAlarmBtn, setBtn, exitBtn;
+    ToggleButton toggleSun, toggleMon, toggleTue, toggleWed, toggleThu, toggleFri, toggleSat;
+    String[] weekday = {"일","월","화","수","목","금","토"};
+    boolean[] week;
+    TextView mTimeDisplay;
+    int mHour, mMinute=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
-        mAlarmMgr = (AlarmManager)getSystemService(ALARM_SERVICE);
+        mAlarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
+        mTimeDisplay = (TextView) findViewById(R.id.timePick);
+        setAlarmBtn = (Button) findViewById(R.id.setAlarmButton);
 
-        mTimeDisplay = (TextView)findViewById(R.id.timePick);
+        ButtonHandler();
 
-        setAlarmBtn = (Button)findViewById(R.id.setAlarmButton);
+    }
+
+    public void ButtonHandler(){
+
         setAlarmBtn.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-                //showDialog(TIME_DIALOG_ID);
+
                 showMessage("알림버튼누름");
 
+                init(); //Dialog init
 
-                customDialog = new Dialog(mContext);
-                customDialog.setContentView(R.layout.custom_dialog);
-                customDialog.setTitle("알림 시간과 요일을 선택하세요.");
-
-                timePicker = (TimePicker) customDialog.findViewById(R.id.timePicker);
-
-                Button setBtn = (Button)customDialog.findViewById(R.id.setBtn);
                 setBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        timePicker.setOnTimeChangedListener(mTimeChangedListener); //set time, day, music
+                        boolean[] weekCheck ={false, toggleSun.isChecked(), toggleMon.isChecked(), toggleTue.isChecked(), toggleWed.isChecked(),
+                                toggleThu.isChecked(), toggleFri.isChecked(), toggleSat.isChecked()};
+                        week = weekCheck;
+
+                        System.out.println(mHour + ":" + mMinute);
+                        updateDisplay();
                         customDialog.dismiss();
+
+//                        for(int i=0; i<week.length; i++)
+//                            System.out.println(week[i]);
+
+                        Intent intent = new Intent(mContext, AlarmReceiver.class);
+                        intent.putExtra("weekday",weekCheck);
+                        SetAlarm(intent);
                     }
                 });
 
-                Button exitBtn = (Button)customDialog.findViewById(R.id.cancelBtn);
                 exitBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -67,63 +76,70 @@ public class AlarmActivity extends Activity {
                     }
                 });
                 customDialog.show();
-
             }
         });
 
-        Calendar cal = Calendar.getInstance();
-
-
 
     }
 
-    private void updateDisplay() {
-        // TODO Auto-generated method stub
-        mTimeDisplay.setText(new StringBuilder().append(pad(mHour)).append(":").append(pad(mMinute)));
+    private void init(){
+
+        customDialog = new Dialog(mContext);   //create CustomDialog
+        customDialog.setContentView(R.layout.custom_dialog);
+        customDialog.setTitle("알림 시간과 요일을 선택하세요.");
+
+        timePicker = (TimePicker) customDialog.findViewById(R.id.timePicker);
+        timePicker.setOnTimeChangedListener(mTimeChangedListener); //set time, day, music
+
+        toggleSun = (ToggleButton) customDialog.findViewById(R.id.toggle_sun);
+        toggleMon = (ToggleButton) customDialog.findViewById(R.id.toggle_mon);
+        toggleTue = (ToggleButton) customDialog.findViewById(R.id.toggle_tue);
+        toggleWed = (ToggleButton) customDialog.findViewById(R.id.toggle_wed);
+        toggleThu = (ToggleButton) customDialog.findViewById(R.id.toggle_thu);
+        toggleFri = (ToggleButton) customDialog.findViewById(R.id.toggle_fri);
+        toggleSat = (ToggleButton) customDialog.findViewById(R.id.toggle_sat);
+
+        setBtn = (Button) customDialog.findViewById(R.id.setBtn);
+        exitBtn = (Button) customDialog.findViewById(R.id.cancelBtn);
     }
 
-    private static String pad(int c) {
-        // TODO Auto-generated method stub
-        if(c >= 10){
-            return String.valueOf(c);
-        }else
-            return "0" + String.valueOf(c);
-    }
-
-    private TimePicker.OnTimeChangedListener mTimeChangedListener=
+   TimePicker.OnTimeChangedListener mTimeChangedListener=
             new TimePicker.OnTimeChangedListener(){
                 @Override
                 public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                     mHour = hourOfDay;
                     mMinute = minute;
-
-                    updateDisplay();
+                    System.out.println(mHour+":"+mMinute);
                 }
             };
 
-//    private TimePickerDialog.OnTimeSetListener mTimeSetListener =
-//            new TimePickerDialog.OnTimeSetListener() {
-//
-//                @Override
-//                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-//                    // TODO Auto-generated method stub
-//                    mHour = hourOfDay;
-//                    mMinute = minute;
-//
-//                    updateDisplay();
-//                }
-//            };
+    public void SetAlarm(Intent mIntent)
+    {
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mAlarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
 
-//    @Override
-//    protected Dialog onCreateDialog(int id){
-//        switch (id) {
-//            case TIME_DIALOG_ID:
-//                TimePickerDialog mTimPickerDialog = new TimePickerDialog(this, mTimeSetListener, mHour, mMinute, false);
-//                mTimPickerDialog.setTitle("알림 시간 설정");
-//                return mTimPickerDialog;
-//        }
-//        return null;
-//    }
+    private void updateDisplay() {
+        String am_pm = "오전";
+        int hour = mHour;
+        if(mHour>12) {
+            am_pm = "오후";
+            hour = mHour-12;
+        }
+        StringBuilder str = new StringBuilder().append(am_pm+" ").append(pad(hour)).append(":").append(pad(mMinute)).append(" /");
+        for(int i=1; i<week.length; i++){
+            if(week[i])
+                str.append(" "+weekday[i-1]);
+        }
+        mTimeDisplay.setText(str);
+    }
+
+    private static String pad(int c) {
+        if(c >= 10){
+            return String.valueOf(c);
+        }else
+            return "0" + String.valueOf(c);
+    }
 
     private void showMessage(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
