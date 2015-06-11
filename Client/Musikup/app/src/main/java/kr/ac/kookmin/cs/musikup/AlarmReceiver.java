@@ -1,42 +1,67 @@
 package kr.ac.kookmin.cs.musikup;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.PowerManager;
+import android.content.SharedPreferences;
 
 import java.util.Calendar;
 
 
 public class AlarmReceiver extends BroadcastReceiver {
 
+    boolean[] week;
     @Override
-    public void onReceive(Context context, Intent intent)
-    {
+    public void onReceive(Context context, Intent intent) {
 
-        boolean[] week = intent.getBooleanArrayExtra("weekday");
+        SharedPreferences pref = context.getSharedPreferences("AlarmTable", Context.MODE_PRIVATE);
         Calendar calendar = Calendar.getInstance();
-        System.out.println(calendar);
-        System.out.println(calendar.get(Calendar.DAY_OF_WEEK));
-        System.out.println(week[calendar.get(Calendar.DAY_OF_WEEK)]);
-        if(!week[calendar.get(Calendar.DAY_OF_WEEK)]) //Sunday=1, Monday=2... Saturday=7
-            return;
-        
-        Intent notify = new Intent(context,AlarmPopupActivity.class);
-        PendingIntent sender = PendingIntent.getActivity(context, 0, notify, 0);
 
-        try {
-            sender.send();
-        } catch(Exception e){
-            e.printStackTrace();
+        if(pref.getInt("minute",-1)!=-1) { //알람이 있는 경우만 실행
+            System.out.println("알람실행!!");
+            if("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) { //재부팅시
+                System.out.println("잉?????재부팅?");
+                //Time Set
+                int minute = pref.getInt("minute", -1);
+                int hour = pref.getInt("hour", -1);
+                int milli = pref.getInt("millisecond", -1);
+
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.HOUR_OF_DAY, hour);
+                cal.set(Calendar.MINUTE, minute);
+                cal.set(Calendar.MILLISECOND, milli);
+
+                //Day Set
+                boolean[] w = {false, pref.getBoolean("Sun", false), pref.getBoolean("Mon", false), pref.getBoolean("Tue", false), pref.getBoolean("Wed", false),
+                        pref.getBoolean("Thu", false), pref.getBoolean("Fri", false), pref.getBoolean("Sat", false)};
+
+                week = w;
+
+                //Alarm Set
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+            }
+            else{
+                week = intent.getBooleanArrayExtra("weekday");
+                System.out.println("요일설정완료");
+            }
+            System.out.println(week[calendar.get(Calendar.DAY_OF_WEEK)]);
+            if (!week[calendar.get(Calendar.DAY_OF_WEEK)]) //Sunday=1, Monday=2... Saturday=7
+                return; //false Check Day doesn't execute Alarm Popup Activity
+
+            //Alarm Popup Activity
+            Intent notify = new Intent(context, AlarmPopupActivity.class);
+            PendingIntent sender = PendingIntent.getActivity(context, 0, notify, 0);
+
+            try {
+                sender.send();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-
-
-    }
-
-    public static boolean isScreenOn(Context context) {
-        return ((PowerManager)context.getSystemService(Context.POWER_SERVICE)).isScreenOn();
     }
 }
 
