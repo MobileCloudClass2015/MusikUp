@@ -27,6 +27,7 @@ public class AlarmPopupActivity extends Activity {
     private TimerTask second;
     private TextView timer_text, today;
     private final Handler handler = new Handler();
+    boolean btnCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,27 +53,16 @@ public class AlarmPopupActivity extends Activity {
     }
 
     public void init(){
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int minute = calendar.get(Calendar.MINUTE);
-        String am_pm = "AM";
-
+        btnCheck = false;
         today = (TextView)findViewById(R.id.timeText);
 
-        if(hour>12){
-            hour -= 12;
-        }
-
-        today.setText(year+"-"+pad(month+1)+"-"+pad(day)+" "+am_pm+" "+pad(hour)+":"+pad(minute)); //2015-06-11 PM 12:02
+        UpdateDisplay();
 
         exitBtn = (Button)findViewById(R.id.exitBtn);
         exitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // showMessage("알람이 종료되었습니다.");
+                btnCheck=true; //for TimerTask cancel
                 finish();
             }
         });
@@ -103,16 +93,35 @@ public class AlarmPopupActivity extends Activity {
                     timer_text.setText((11 - timer_sec) + "초 후에 알람창을 닫을 수 있습니다.");
                 }
                 else {
-                    second.cancel(); //timerTask 종료
                     timer_text.setText("알림창을 닫으면 알림이 종료됩니다.");
                     exitBtn.setVisibility(View.VISIBLE);
                     timer_text.setVisibility(View.INVISIBLE);
+                    UpdateDisplay();
+                    if(btnCheck){
+                        System.out.println("쓰레드 종료!!!!!!");
+                        second.cancel(); //timerTask 종료
+                    }
                 }
             }
         };
         handler.post(updater);
     }
 
+    public void UpdateDisplay(){
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+        String am_pm = "AM";
+
+        if(hour>12){
+            hour -= 12;
+        }
+        System.out.println(year+"-"+pad(month+1)+"-"+pad(day)+" "+am_pm+" "+pad(hour)+":"+pad(minute));
+        today.setText(year+"-"+pad(month+1)+"-"+pad(day)+" "+am_pm+" "+pad(hour)+":"+pad(minute)); //2015-06-11 PM 12:02
+    }
     private static String pad(int c) {
         if(c >= 10){
             return String.valueOf(c);
