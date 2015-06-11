@@ -36,11 +36,12 @@
             android:name=".AlarmActivity"
             android:label="@string/title_activity_alarm" >
         </activity>
-
         <activity
             android:name=".AlarmPopupActivity"
+            android:label="@string/title_activity_alarm_popup"
             android:theme="@android:style/Theme.Translucent">
         </activity>
+
     </application>
 
 </manifest>

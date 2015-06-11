@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.PowerManager;
 
 import java.util.Calendar;
 
@@ -23,7 +24,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             return;
         
         Intent notify = new Intent(context,AlarmPopupActivity.class);
-        notify.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent sender = PendingIntent.getActivity(context, 0, notify, 0);
 
         try {
@@ -35,31 +35,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     }
 
-//    @Override
-//    public void onReceive(Context context, Intent intent)
-//    {
-//
-//        Bundle extra = intent.getExtras();
-//        if (extra != null)
-//        {
-//            boolean isOneTime = extra.getBoolean("one_time");
-//            if (isOneTime)
-//            {
-//              //  AlarmDataManager.getInstance().setAlarmEnable(context, false);
-//                // 알람 울리기.
-//            }
-//            else
-//            {
-//                boolean[] week = extra.getBooleanArray("day_of_week");
-//
-//                Calendar cal = Calendar.getInstance();
-//
-//                if (!week[cal.get(Calendar.DAY_OF_WEEK)])
-//                    return;
-//
-//                // 알람 울리기.
-//            }
-//        }
-//    }
+    public static boolean isScreenOn(Context context) {
+        return ((PowerManager)context.getSystemService(Context.POWER_SERVICE)).isScreenOn();
+    }
 }
 
