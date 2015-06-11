@@ -2,11 +2,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:weightSum="1"
+    android:onClick="onButtonClicked">
 
-    <ListView android:id="@+id/mylist"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
+    <Button
+        android:layout_width="284dp"
+        android:layout_height="wrap_content"
+        android:text="음악선택"
+        android:id="@+id/selectbtn"
+        android:layout_weight="0.03"
+         />
 
 </LinearLayout>
