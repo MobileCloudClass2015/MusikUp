@@ -7,13 +7,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar" >
-
         <uses-permission android:name="android.permission.INTERNET" />
         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-
-        <uses-permission android:name="android.permission.WAKE_LOCK"/>
-        <receiver  android:process=":remote" android:name=".AlarmReceiver"/>
+        <receiver
+            android:name=".AlarmReceiver"
+            android:process=":remote" />
 
         <activity
             android:name=".MainActivity"
@@ -35,6 +35,10 @@
         <activity
             android:name=".AlarmActivity"
             android:label="@string/title_activity_alarm" >
+        </activity>
+        <activity
+            android:name=".AlarmPopupActivity"
+            android:label="@string/title_activity_alarm_popup" >
         </activity>
     </application>
 

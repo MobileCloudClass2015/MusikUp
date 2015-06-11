@@ -14,6 +14,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.util.Calendar;
+
 
 public class AlarmActivity extends Activity {
     final Context mContext = this;
@@ -45,8 +47,6 @@ public class AlarmActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                showMessage("알림버튼누름");
-
                 init(); //Dialog init
 
                 setBtn.setOnClickListener(new View.OnClickListener() {
@@ -56,15 +56,11 @@ public class AlarmActivity extends Activity {
                                 toggleThu.isChecked(), toggleFri.isChecked(), toggleSat.isChecked()};
                         week = weekCheck;
 
-                        System.out.println(mHour + ":" + mMinute);
                         updateDisplay();
                         customDialog.dismiss();
 
-//                        for(int i=0; i<week.length; i++)
-//                            System.out.println(week[i]);
-
                         Intent intent = new Intent(mContext, AlarmReceiver.class);
-                        intent.putExtra("weekday",weekCheck);
+                        intent.putExtra("weekday",weekCheck); //put Checked weekday
                         SetAlarm(intent);
                     }
                 });
@@ -79,6 +75,12 @@ public class AlarmActivity extends Activity {
             }
         });
 
+        cancelAlarmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CancelAlarm();
+            }
+        });
 
     }
 
@@ -109,14 +111,25 @@ public class AlarmActivity extends Activity {
                 public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                     mHour = hourOfDay;
                     mMinute = minute;
-                    System.out.println(mHour+":"+mMinute);
+                    System.out.println(mHour + ":" + mMinute);
                 }
             };
 
     public void SetAlarm(Intent mIntent)
     {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, mHour);
+        calendar.set(Calendar.MINUTE, mMinute);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        mAlarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        mAlarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+    }
+
+    public void CancelAlarm()
+    {
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(sender);
     }
 
     private void updateDisplay() {

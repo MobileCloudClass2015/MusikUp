@@ -1,12 +1,8 @@
 package kr.ac.kookmin.cs.musikup;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.PowerManager;
-import android.widget.Toast;
 
 import java.util.Calendar;
 
@@ -16,30 +12,24 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
-        wl.acquire();
+//        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+//        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
+//        wl.acquire();
+//
+//
+//        Toast.makeText(context, "Alarm !!!!!!!!!!", Toast.LENGTH_LONG).show(); // example
+//
+//        wl.release();
 
+        boolean[] week = intent.getBooleanArrayExtra("weekday");
+        Calendar calendar = Calendar.getInstance();
 
-        Toast.makeText(context, "Alarm !!!!!!!!!!", Toast.LENGTH_LONG).show(); // example
+        if(!week[calendar.get(Calendar.DAY_OF_WEEK)]) //Sunday=1, Monday=2... Saturday=7
+            return;
+        
+        Intnet notiyfy = new Intent(context,)
 
-        wl.release();
-    }
-
-    public void SetAlarm(Context context)
-    {
-        AlarmManager alarmManager =(AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); // FLAG_UPDATE_CURRENT
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 60 * 10, pi); // Millisec * Second * Minute
-    }
-
-    public void CancelAlarm(Context context)
-    {
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(sender);
+        
     }
 
     private long setTriggerTime()
