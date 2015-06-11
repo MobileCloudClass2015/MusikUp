@@ -1,5 +1,6 @@
 package kr.ac.kookmin.cs.musikup;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,14 +13,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent)
     {
-//        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-//        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
-//        wl.acquire();
-//
-//
-//        Toast.makeText(context, "Alarm !!!!!!!!!!", Toast.LENGTH_LONG).show(); // example
-//
-//        wl.release();
 
         boolean[] week = intent.getBooleanArrayExtra("weekday");
         Calendar calendar = Calendar.getInstance();
@@ -27,9 +20,16 @@ public class AlarmReceiver extends BroadcastReceiver {
         if(!week[calendar.get(Calendar.DAY_OF_WEEK)]) //Sunday=1, Monday=2... Saturday=7
             return;
         
-        Intnet notiyfy = new Intent(context,)
+        Intent notify = new Intent(context,AlarmPopupActivity.class);
+        PendingIntent sender = PendingIntent.getActivity(context, 0, notify, 0);
 
-        
+        try {
+            sender.send();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+
     }
 
     private long setTriggerTime()
