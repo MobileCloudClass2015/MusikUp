@@ -2,11 +2,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp">
+    android:paddingTop="20dp"
+    android:background="#ffffff">
 
-    <ListView android:id="@+id/mylist"
+    <ListView android:id="@+id/myList"
         android:layout_width="match_parent"
         android:layout_height="450dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/textView"/>
 
     <TextView
@@ -14,18 +16,20 @@
         android:layout_height="wrap_content"
         android:text="음악을 선택하세요."
         android:id="@+id/textView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:textSize="15dp"
+        android:layout_centerHorizontal="true"/>
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="선택하기"
-        android:id="@+id/selectBtn"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_width="130dp"
+        android:layout_height="50dp"
+        android:text="음악 선택"
+        android:textSize="25dp"
+        android:background="#288cff"
+        android:textColor="#ffffff"
+        android:id="@+id/selectSeedBtn"
+        android:layout_below="@+id/myList"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
         android:longClickable="false" />
 
 </RelativeLayout>

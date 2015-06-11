@@ -15,6 +15,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.Socket;
 import java.util.Calendar;
 
 
@@ -26,12 +31,16 @@ public class AlarmActivity extends Activity {
     AlarmManager mAlarmMgr;
     Dialog customDialog;
     TimePicker timePicker;
-    Button setAlarmBtn, cancelAlarmBtn, selectBtn, setBtn, exitBtn;
+    Button setAlarmBtn, cancelAlarmBtn, selectBtn, selectSeedBtn, setBtn, exitBtn;
     ToggleButton toggleSun, toggleMon, toggleTue, toggleWed, toggleThu, toggleFri, toggleSat;
     String[] weekday = {"일","월","화","수","목","금","토"};
     boolean[] week;
     TextView mTimeDisplay, mSeedSongDisplay;
     int mHour, mMinute=-1;
+
+    String musicFilePath = null;
+    String artist = null;
+    String title = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +74,14 @@ public class AlarmActivity extends Activity {
                     init(); //Dialog init
 
                     //Dialog Button Listener
+                    selectBtn.setOnClickListener(new View.OnClickListener() { // Open Music List which User has on user's phone..
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getApplicationContext(), MusicListActivity.class);
+                            startActivityForResult(intent, 1);
+                        }
+                    });
+
                     setBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -198,6 +215,49 @@ public class AlarmActivity extends Activity {
             return String.valueOf(c);
         }else
             return "0" + String.valueOf(c);
+    }
+
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            musicFilePath = data.getStringExtra("filepath");
+            artist = data.getStringExtra("artist");
+            title = data.getStringExtra("title");
+
+            selectBtn.setText(title + "-" + artist);
+
+         //   pushSeed();
+        }
+    }
+
+    public void pushSeed(){
+        try{
+            Socket sock = new Socket("52.68.250.226", 8000);
+
+            try{
+                DataInputStream input = new DataInputStream(new FileInputStream(
+                        new File(musicFilePath)));
+                DataOutputStream output = new DataOutputStream(sock.getOutputStream());
+
+                byte[] buf = new byte[1024];
+                while(input.read(buf)>0){
+                    output.write(buf);
+                    output.flush();
+                }
+                output.close();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
+            finally
+            {
+                sock.close();
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void showMessage(String msg) {

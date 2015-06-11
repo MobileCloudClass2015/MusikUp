@@ -15,7 +15,7 @@
             android:padding="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#00ccff"
+            android:textColor="#288cff"
             android:textStyle="bold"
             />
         <TextView android:id="@+id/singer"
