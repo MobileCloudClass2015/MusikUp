@@ -10,11 +10,9 @@
         <uses-permission android:name="android.permission.INTERNET" />
         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
         <uses-permission android:name="android.permission.WAKE_LOCK" />
-        <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+        <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-
-        <receiver
-            android:name=".AlarmReceiver">
+        <receiver android:name=".AlarmReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -24,7 +22,7 @@
             android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -44,9 +42,12 @@
         <activity
             android:name=".AlarmPopupActivity"
             android:label="@string/title_activity_alarm_popup"
-            android:theme="@android:style/Theme.Translucent">
+            android:theme="@android:style/Theme.Translucent" >
         </activity>
-
+        <activity
+            android:name=".MusicListActivity"
+            android:label="@string/title_activity_music_list" >
+        </activity>
     </application>
 
 </manifest>

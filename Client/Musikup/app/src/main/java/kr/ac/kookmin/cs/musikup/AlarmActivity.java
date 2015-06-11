@@ -26,7 +26,7 @@ public class AlarmActivity extends Activity {
     AlarmManager mAlarmMgr;
     Dialog customDialog;
     TimePicker timePicker;
-    Button setAlarmBtn, cancelAlarmBtn, setBtn, exitBtn;
+    Button setAlarmBtn, cancelAlarmBtn, selectBtn, setBtn, exitBtn;
     ToggleButton toggleSun, toggleMon, toggleTue, toggleWed, toggleThu, toggleFri, toggleSat;
     String[] weekday = {"일","월","화","수","목","금","토"};
     boolean[] week;
@@ -132,6 +132,7 @@ public class AlarmActivity extends Activity {
         toggleFri = (ToggleButton) customDialog.findViewById(R.id.toggle_fri);
         toggleSat = (ToggleButton) customDialog.findViewById(R.id.toggle_sat);
 
+        selectBtn = (Button) customDialog.findViewById(R.id.selectBtn);
         setBtn = (Button) customDialog.findViewById(R.id.setBtn);
         exitBtn = (Button) customDialog.findViewById(R.id.cancelBtn);
     }
@@ -150,11 +151,11 @@ public class AlarmActivity extends Activity {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHour);
         calendar.set(Calendar.MINUTE, mMinute-1);
-        calendar.set(Calendar.MILLISECOND, 20000);
+        calendar.set(Calendar.MILLISECOND, 30000);
 
         edit.putInt("hour",mHour);
         edit.putInt("minute",mMinute-1);
-        edit.putInt("millisecond", 20000);
+        edit.putInt("millisecond", 30000);
         edit.commit();
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
