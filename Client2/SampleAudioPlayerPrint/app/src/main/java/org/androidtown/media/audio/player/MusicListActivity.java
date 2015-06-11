@@ -63,35 +63,33 @@ public class MusicListActivity extends ActionBarActivity {
         mListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 
-                // 음악파일 제목, 가수 정보 보낸다,
-                String musicInfoSeed = null;
+                // 음악파일 제목, 가수 정보 저장
                 fileTitle = mMusicAdapter.getTitle(position);
                 fileArtist = mMusicAdapter.getSinger(position);
-                musicInfoSeed = fileTitle + " "  + fileArtist;
-                System.out.println(musicInfoSeed);
 
+                //선택된 곡의 정보를 toast message로 보여준다.
                 Toast.makeText(getApplicationContext(), "\""+fileArtist+"\"의 "
                         + "\""+fileTitle+"\"" + " 곡이 선택되었습니다.", Toast.LENGTH_SHORT).show();
 
+                //선택된곡 알려줌
                 selectMusicInfo.setText("선택된곡 : "+ fileTitle + "-" + fileArtist);
 
                 //음악파일을 보낸다.
                 Uri musicURI = Uri.withAppendedPath(
                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "" + mMusicAdapter.getMusicID(position));
 
-                //playMusic(musicURI);
-
+                //uri가지고 file path를 구한다.
                 filePath = getPathFromUri(musicURI);
-
-                System.out.println(filePath);
             }
         });
 
+        //버튼을 누를시 발생하는 event
         selectBtn = (Button) findViewById(R.id.selectBtn);
         selectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                //변수 정보 보내기
                 Intent intent = getIntent();
                 intent.putExtra("filepath", filePath);
                 intent.putExtra("title" , fileTitle );

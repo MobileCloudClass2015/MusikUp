@@ -27,6 +27,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        //버튼 클릭시 발생하는 event
         selectButton = (Button) findViewById(R.id.selectbtn);
         selectButton.setOnClickListener(new View.OnClickListener() {
             @Override
