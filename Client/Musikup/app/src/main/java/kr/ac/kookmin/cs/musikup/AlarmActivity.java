@@ -36,7 +36,7 @@ public class AlarmActivity extends Activity {
         mAlarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
         mTimeDisplay = (TextView) findViewById(R.id.timePick);
         setAlarmBtn = (Button) findViewById(R.id.setAlarmButton);
-
+        cancelAlarmBtn = (Button) findViewById(R.id.cancelAlarmButton);
         ButtonHandler();
 
     }
@@ -120,6 +120,7 @@ public class AlarmActivity extends Activity {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHour);
         calendar.set(Calendar.MINUTE, mMinute);
+        calendar.set(Calendar.MILLISECOND, 0);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mAlarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }

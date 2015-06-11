@@ -16,11 +16,14 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         boolean[] week = intent.getBooleanArrayExtra("weekday");
         Calendar calendar = Calendar.getInstance();
-
+        System.out.println(calendar);
+        System.out.println(calendar.get(Calendar.DAY_OF_WEEK));
+        System.out.println(week[calendar.get(Calendar.DAY_OF_WEEK)]);
         if(!week[calendar.get(Calendar.DAY_OF_WEEK)]) //Sunday=1, Monday=2... Saturday=7
             return;
         
         Intent notify = new Intent(context,AlarmPopupActivity.class);
+        notify.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent sender = PendingIntent.getActivity(context, 0, notify, 0);
 
         try {
@@ -30,24 +33,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         }
 
 
-    }
-
-    private long setTriggerTime()
-    {
-        // current Time
-        long atime = System.currentTimeMillis();
-        // timepicker
-        Calendar curTime = Calendar.getInstance();
-       // curTime.set(Calendar.HOUR_OF_DAY, this.mAlarmData.getHour(this));
-       // curTime.set(Calendar.MINUTE, this.mAlarmData.getMinute(this));
-        curTime.set(Calendar.SECOND, 0);
-        curTime.set(Calendar.MILLISECOND, 0);
-        long btime = curTime.getTimeInMillis();
-        long triggerTime = btime;
-        if (atime > btime)
-            triggerTime += 1000 * 60 * 60 * 24;
-
-        return triggerTime;
     }
 
 //    @Override
