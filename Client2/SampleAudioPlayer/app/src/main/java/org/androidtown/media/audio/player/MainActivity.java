@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,7 +50,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-
          /* Layout으로 부터 ListView에 대한 객체를 얻는다. */
         mListView = (ListView) findViewById(R.id.mylist);
 
@@ -57,16 +57,32 @@ public class MainActivity extends ActionBarActivity {
 
         mListView.setAdapter(mMusicAdapter);
 
-        System.out.println("1");
+
+
+
         /* Listener for selecting a item */
         mListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 
+                // 음악파일 제목, 가수 정보 보낸다,
                 String musicInfoSeed = null;
-                String title = mMusicAdapter.getTitle(position);
-                String singer = mMusicAdapter.getSinger(position);
-                musicInfoSeed = title + " "  + singer;
+                musicInfoSeed = mMusicAdapter.getTitle(position) + " " + mMusicAdapter.getSinger(position);
                 System.out.println(musicInfoSeed);
+
+                Toast.makeText(getApplicationContext(), "\"" + mMusicAdapter.getSinger(position) + "\"" + "의 "
+                        + "\"" + mMusicAdapter.getTitle(position) + "\"" + " 곡이 선택되었습니다.", Toast.LENGTH_SHORT).show();
+
+                //음악파일을 보낸다.
+                Uri musicURI = Uri.withAppendedPath(
+                        MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, "" + mMusicAdapter.getMusicID(position));
+
+                //playMusic(musicURI);
+
+                String filePath = getPathFromUri(musicURI);
+
+                System.out.println(filePath);
+
+
             }
         });
 
@@ -81,6 +97,16 @@ public class MainActivity extends ActionBarActivity {
         mMediaPlayer = null;
     }
 
+    // get file path from uri
+    public String getPathFromUri(Uri uri){
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null );
+        cursor.moveToNext();
+        String path = cursor.getString( cursor.getColumnIndex( "_data" ) );
+        //c.close();
+
+
+        return path;
+    }
 
     /**
      * ==========================================
