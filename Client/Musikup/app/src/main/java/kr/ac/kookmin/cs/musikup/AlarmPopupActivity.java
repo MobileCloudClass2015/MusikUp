@@ -2,36 +2,41 @@ package kr.ac.kookmin.cs.musikup;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class AlarmPopupActivity extends Activity {
-
-    //View popupView;
-    //PopupWindow popupWindow;
+    SharedPreferences pref;
     Context mContext;
     Button exitBtn;
     int timer_sec = 0;
     int count = 0;
     private TimerTask second;
-    private TextView timer_text, today;
+    private TextView timer_text, today, songInfoText;
     private final Handler handler = new Handler();
     boolean btnCheck;
+
+    private StreamingMediaPlayer audioStreamer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = this.getSharedPreferences("AlarmTable", Context.MODE_PRIVATE);
+
         requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                              |WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -44,17 +49,16 @@ public class AlarmPopupActivity extends Activity {
 
         System.out.println("popup!!!!!!!!!!!!!!");
 
+        initControls();
         init();
         alarmTimeStart();
-//
 
-//        PopupAlarmWidget alarmWidget = new PopupAlarmWidget(this);
-//        alarmWidget.show();
-//        alarmWidget.alarmTimeStart();
     }
 
     public void init(){
         btnCheck = false;
+        songInfoText = (TextView)findViewById(R.id.songInfoText);
+        songInfoText.setText(pref.getString("reTitle","")+" - "+pref.getString("reArtist",""));
         today = (TextView)findViewById(R.id.timeText);
 
         UpdateDisplay();
@@ -69,6 +73,15 @@ public class AlarmPopupActivity extends Activity {
         });
 
     }
+
+    private void initControls() {
+        startStreamingAudio();
+
+        audioStreamer.getMediaPlayer().start();
+        audioStreamer.startPlayProgressUpdater();
+
+    }
+
 
     public void alarmTimeStart() {
         timer_text = (TextView) findViewById(R.id.msg);
@@ -130,8 +143,18 @@ public class AlarmPopupActivity extends Activity {
             return "0" + String.valueOf(c);
     }
 
-    private void showMessage(String msg) {
-        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+    private void startStreamingAudio() {
+        try {
+            if ( audioStreamer != null) {
+                audioStreamer.interrupt();
+            }
+            audioStreamer = new StreamingMediaPlayer(this);
+            //audioStreamer.startStreaming("http://www.pocketjourney.com/downloads/pj/tutorials/audio.mp3",1717, 214);
+            audioStreamer.startStreaming("http://internet.chonbuk.ac.kr/~songwei/DD/tellme.mp3",5208, 216);
+        } catch (IOException e) {
+            Log.e(getClass().getName(), "Error starting to stream audio.", e);
+        }
     }
+
 
 }

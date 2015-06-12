@@ -22,7 +22,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -63,12 +62,12 @@ public class MusicListActivity extends Activity {
                 fileTitle = mMusicAdapter.getTitle(position);
                 fileArtist = mMusicAdapter.getSinger(position);
 
-                //선택된 곡의 정보를 toast message로 보여준다.
-                Toast.makeText(getApplicationContext(), "\"" + fileArtist + "\"의 "
-                        + "\"" + fileTitle + "\"" + " 곡이 선택되었습니다.", Toast.LENGTH_SHORT).show();
+//                //선택된 곡의 정보를 toast message로 보여준다.
+//                Toast.makeText(getApplicationContext(), "\"" + fileArtist + "\"의 "
+//                        + "\"" + fileTitle + "\"" + " 곡이 선택되었습니다.", Toast.LENGTH_SHORT).show();
 
                 //선택된곡 알려줌
-                selectMusicInfo.setText("선택된곡 : " + fileTitle + "-" + fileArtist);
+                selectMusicInfo.setText("선택된 곡 : " + fileTitle + "-" + fileArtist);
 
                 //음악파일을 보낸다.
                 Uri musicURI = Uri.withAppendedPath(

@@ -15,12 +15,19 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class AlarmActivity extends Activity {
@@ -52,10 +59,12 @@ public class AlarmActivity extends Activity {
 
         mAlarmMgr = (AlarmManager) getSystemService(ALARM_SERVICE);
         mTimeDisplay = (TextView) findViewById(R.id.timePick);
+        mSeedSongDisplay = (TextView) findViewById(R.id.songPick);
         setAlarmBtn = (Button) findViewById(R.id.setAlarmButton);
         cancelAlarmBtn = (Button) findViewById(R.id.cancelAlarmButton);
 
-        if(pref.getInt("minute",-1)!=-1){
+        if(pref.getInt("minute",-1)!=-1){ //이미 알람이 등록 되어 있을 경우 알람 설정 내용을 보여준다.
+          //  mSeedSongDisplay.setText(pref.getString("title", null) + "-" + pref.getString("artist",null));
             updateDisplay();
         }
         ButtonHandler();
@@ -73,8 +82,10 @@ public class AlarmActivity extends Activity {
                 else {
                     init(); //Dialog init
 
-                    //Dialog Button Listener
-                    selectBtn.setOnClickListener(new View.OnClickListener() { // Open Music List which User has on user's phone..
+                    /*Dialog Button Listener*/
+
+                    // Open Music List which User has on user's phone.
+                    selectBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(getApplicationContext(), MusicListActivity.class);
@@ -96,7 +107,6 @@ public class AlarmActivity extends Activity {
                             edit.putBoolean("Thu",toggleThu.isChecked());
                             edit.putBoolean("Fri",toggleFri.isChecked());
                             edit.putBoolean("Sat",toggleSat.isChecked());
-
                             edit.commit();
 
                             Intent intent = new Intent(mContext, AlarmReceiver.class);
@@ -105,7 +115,9 @@ public class AlarmActivity extends Activity {
                             System.out.println(mHour + ":" + mMinute);
 
                             updateDisplay();
+
                             customDialog.dismiss();
+                            pushSeedInfo();
                         }
                     });
 
@@ -136,7 +148,7 @@ public class AlarmActivity extends Activity {
 
         customDialog = new Dialog(mContext);   //create CustomDialog
         customDialog.setContentView(R.layout.custom_dialog);
-        customDialog.setTitle("알림 시간과 요일을 선택하세요.");
+        customDialog.setTitle("알람 시간과 요일을 선택하세요.");
 
         timePicker = (TimePicker) customDialog.findViewById(R.id.timePicker);
         timePicker.setOnTimeChangedListener(mTimeChangedListener); //set time, day, music
@@ -189,6 +201,7 @@ public class AlarmActivity extends Activity {
         edit.clear();
         edit.commit();
         mTimeDisplay.setText("");
+        mSeedSongDisplay.setText(pref.getString("title", "")+ pref.getString("artist", ""));
     }
 
     private void updateDisplay() {
@@ -208,6 +221,7 @@ public class AlarmActivity extends Activity {
                 str.append(" "+weekday[i-1]);
         }
         mTimeDisplay.setText(str);
+        mSeedSongDisplay.setText(pref.getString("title", null) + "-" + pref.getString("artist",null));
     }
 
     private static String pad(int c) {
@@ -224,14 +238,50 @@ public class AlarmActivity extends Activity {
             musicFilePath = data.getStringExtra("filepath");
             artist = data.getStringExtra("artist");
             title = data.getStringExtra("title");
-
+            edit.putString("title",title);
+            edit.putString("artist",artist);
+            edit.commit();
             selectBtn.setText(title + "-" + artist);
 
-         //   pushSeed();
+         //   sendSeedFile();
         }
     }
 
-    public void pushSeed(){
+    public void pushSeedInfo(){ //push Seed Info
+        ServerRequest sr = new ServerRequest();
+        List<NameValuePair> seedInfo = new ArrayList<NameValuePair>();
+        seedInfo.add(new BasicNameValuePair("title", title));
+        seedInfo.add(new BasicNameValuePair("artist", artist));
+
+        JSONObject json = sr.getJSON("http://52.68.250.226:3000/music/search",seedInfo); //send id,pwd info
+        if(json != null){
+            try{
+                String jsonstr = json.getString("response");
+
+                if(json.getBoolean("res")){         //보나셀 서버에 seed 정보 있으면 서버에서 추천음악 정보를 줌
+                   //prepare ULR // Recommand Music
+                    String reTitle = json.getString("title");
+                    String reArtist = json.getString("artist");
+                    edit.putString("reTitle",reTitle);
+                    edit.putString("reArtist",reArtist);
+                    edit.commit();
+                }
+                else{                   //보나셀 서버에 seed 정보 없으면
+                    //sendSeedFile();
+                }
+
+                showMessage(jsonstr);
+
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+    }
+
+    public void sendSeedFile(){
         try{
             Socket sock = new Socket("52.68.250.226", 8000);
 

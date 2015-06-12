@@ -30,9 +30,9 @@
             android:id="@+id/setAlarmButton"
             android:layout_width="140dp"
             android:layout_height="60dp"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="23dp"
             android:background="#288cff"
-            android:text="알림등록"
+            android:text="알람등록"
             android:textColor="#ffffff"
             android:textSize="30dp" />
 
@@ -44,7 +44,7 @@
             android:layout_marginLeft="35dp"
             android:layout_toRightOf="@+id/setAlarmButton"
             android:background="#288cff"
-            android:text="알림해제"
+            android:text="알람해제"
             android:textColor="#ffffff"
             android:textSize="30dp" />
 
@@ -54,7 +54,7 @@
             android:layout_height="60dp"
             android:layout_below="@+id/cancelAlarmButton"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="100dp"
             android:textColor="#288cff"
             android:textSize="35dp" />
 
@@ -64,9 +64,9 @@
             android:layout_height="60dp"
             android:layout_below="@+id/timePick"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:textColor="#288cff"
-            android:textSize="35dp" />
+            android:textSize="25dp" />
     </RelativeLayout>
 
 </RelativeLayout>
