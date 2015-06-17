@@ -1,0 +1,72 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff">
+
+    <RelativeLayout
+        android:id="@+id/topBar"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#288cff">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="Musikup"
+            android:textColor="#ffffff"
+            android:textSize="60dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/topBar"
+        android:layout_marginTop="50dp"
+        android:background="#ffffff">
+
+        <Button
+            android:id="@+id/setAlarmButton"
+            android:layout_width="140dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="23dp"
+            android:background="#288cff"
+            android:text="알람등록"
+            android:textColor="#ffffff"
+            android:textSize="30dp" />
+
+
+        <Button
+            android:id="@+id/cancelAlarmButton"
+            android:layout_width="140dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="35dp"
+            android:layout_toRightOf="@+id/setAlarmButton"
+            android:background="#288cff"
+            android:text="알람해제"
+            android:textColor="#ffffff"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/timePick"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:layout_below="@+id/cancelAlarmButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:textColor="#288cff"
+            android:textSize="35dp" />
+
+        <TextView
+            android:id="@+id/songPick"
+            android:layout_width="280dp"
+            android:layout_height="60dp"
+            android:layout_below="@+id/timePick"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="#288cff"
+            android:textSize="25dp" />
+    </RelativeLayout>
+
+</RelativeLayout>
