@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,11 +21,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataInputStream;
+import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.net.Socket;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -48,6 +51,10 @@ public class AlarmActivity extends Activity {
     String musicFilePath = null;
     String artist = null;
     String title = null;
+
+    private URL url;
+    private HttpURLConnection urlConnection;
+    private static String boundary = "ABAB***ABAB";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +214,7 @@ public class AlarmActivity extends Activity {
     private void updateDisplay() {
         String am_pm = "오전";
         int hour = pref.getInt("hour",-1);
-        int minute = pref.getInt("minute",-1);
+        int minute = pref.getInt("minute", -1);
         if(hour>12) {
             am_pm = "오후";
             hour -= 12;
@@ -237,7 +244,7 @@ public class AlarmActivity extends Activity {
         if(resultCode==RESULT_OK){
             musicFilePath = data.getStringExtra("filepath");
             artist = data.getStringExtra("artist");
-            title = data.getStringExtra("title");
+            title = data.getStringExtra("filename");
             edit.putString("title",title);
             edit.putString("artist",artist);
             edit.commit();
@@ -262,11 +269,13 @@ public class AlarmActivity extends Activity {
 //        }
         json = sr.getJSON("http://52.68.250.226:3000/music/search",seedInfo); //send id,pwd info
         if(json != null){
+            System.out.println(json);
             try{
                 String jsonstr = json.getString("response");
 
                 if(json.getBoolean("res")){         //보나셀 서버에 seed 정보 있으면 서버에서 추천음악 정보를 줌
                    //prepare ULR // Recommand Music
+
                     String reTitle = json.getString("title");
                     String reArtist = json.getString("artist");
                     edit.putString("reTitle",reTitle);
@@ -289,32 +298,91 @@ public class AlarmActivity extends Activity {
     }
 
     public void sendSeedFile(){
-        try{
-            Socket sock = new Socket("52.68.250.226", 8000);
+        Thread work = new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-            try{
-                DataInputStream input = new DataInputStream(new FileInputStream(
-                        new File(musicFilePath)));
-                DataOutputStream output = new DataOutputStream(sock.getOutputStream());
+                try {
+                    url = new URL("http://52.68.250.226:3000/upload");
+                    urlConnection = (HttpURLConnection) url.openConnection();
 
-                byte[] buf = new byte[1024];
-                while(input.read(buf)>0){
-                    output.write(buf);
-                    output.flush();
+                    urlConnection.setDoInput(true);
+                    urlConnection.setDoOutput(true);
+                    //urlConnection.setChunkedStreamingMode(0);
+                    urlConnection.setUseCaches(false);
+
+                    urlConnection.setRequestMethod("POST");
+                    urlConnection
+                            .setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+
+                    DataOutputStream out = new DataOutputStream(urlConnection.getOutputStream());
+
+                    File path = new File(musicFilePath);
+                    if (!path.exists()) {
+                        Log.e("mytag", "file not exists");
+                        return;
+                    }
+
+                    out.writeBytes("--" + boundary + "\r\n");
+                    out.writeBytes(
+                            "Content-Disposition: form-data;" + "name=\"playinfo\";" + "\r\n");
+                    out.writeBytes("\r\n");
+                    out.writeBytes(
+                            "{\"title\":\"" + title + "\"," + "\"artist\":\"" + artist + "\"}" + "\r\n");
+                    out.flush();
+
+                    out.writeBytes("--" + boundary + "\r\n");
+                    out.writeBytes(
+                            "Content-Disposition: form-data;" + "name=\"userinfo\";" + "\r\n");
+                    out.writeBytes("\r\n");
+                    out.writeBytes("{\"user_id\":\"guest\"," + "\"request\":\"play\"}" + "\r\n");
+                    out.flush();
+
+                    out.writeBytes("--" + boundary + "\r\n");
+                    out.writeBytes(
+                            "Content-Disposition: form-data;" + "name=\"uploaded\";"
+                                    + "filename=\"" + title + "\"" + "\r\n");
+                    out.writeBytes("\r\n");
+
+                    FileInputStream filestream = new FileInputStream(path);
+
+                    int bytesAvailable = filestream.available();
+                    int bufsize = Math.min(bytesAvailable, 1024 * 32);
+                    byte[] buff = new byte[bufsize];
+                    while (filestream.read(buff, 0, bufsize) > 0) {
+                        out.write(buff, 0, bufsize);
+                        bytesAvailable = filestream.available();
+                        bufsize = Math.min(bytesAvailable, 1024 * 32);
+                    }
+
+                    out.writeBytes("\r\n");
+                    out.writeBytes("--" + boundary + "--\r\n");
+
+                    filestream.close();
+                    out.flush();
+                    out.close();
+
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                    int data;
+                    String result = "";
+                    while ((data = in.read()) != -1) {
+                        result += (char) data;
+                    }
+                    Log.i("mytag", result);
+                    in.close();
+
+                    //Toast.makeText(getApplicationContext(), "recv data : " + result, Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    urlConnection.disconnect();
                 }
-                output.close();
             }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-            finally
-            {
-                sock.close();
-            }
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+
+        });
+
+        work.start();
     }
 
     private void showMessage(String msg) {

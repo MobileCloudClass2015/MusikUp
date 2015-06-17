@@ -33,7 +33,7 @@ public class MusicListActivity extends Activity {
     TextView selectMusicInfo = null;
 
     String filePath = null;
-    String fileTitle = null;
+    String fileName = null;
     String fileArtist = null;
 
     private ListView mListView;
@@ -59,7 +59,7 @@ public class MusicListActivity extends Activity {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 
                 // 음악파일 제목, 가수 정보 저장
-                fileTitle = mMusicAdapter.getTitle(position);
+                fileName = mMusicAdapter.getName(position);
                 fileArtist = mMusicAdapter.getSinger(position);
 
 //                //선택된 곡의 정보를 toast message로 보여준다.
@@ -67,7 +67,7 @@ public class MusicListActivity extends Activity {
 //                        + "\"" + fileTitle + "\"" + " 곡이 선택되었습니다.", Toast.LENGTH_SHORT).show();
 
                 //선택된곡 알려줌
-                selectMusicInfo.setText("선택된 곡 : " + fileTitle + "-" + fileArtist);
+                selectMusicInfo.setText("선택된 곡 : " + fileName + "-" + fileArtist);
 
                 //음악파일을 보낸다.
                 Uri musicURI = Uri.withAppendedPath(
@@ -86,7 +86,7 @@ public class MusicListActivity extends Activity {
                 //변수 정보 보내기
                 Intent intent = getIntent();
                 intent.putExtra("filepath", filePath);
-                intent.putExtra("title", fileTitle);
+                intent.putExtra("filename", fileName);
                 intent.putExtra("artist", fileArtist);
                 setResult(RESULT_OK, intent);
                 finish();
@@ -156,7 +156,7 @@ public class MusicListActivity extends Activity {
             return Integer.parseInt((mMusicIDList.get(position)));
         }
 
-        public String getTitle(int position) {
+        public String getName(int position) {
             return mMusiceTitleList.get(position);
         }
 
