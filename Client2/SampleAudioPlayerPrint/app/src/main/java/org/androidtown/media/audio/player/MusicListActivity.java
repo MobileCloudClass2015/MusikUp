@@ -36,8 +36,10 @@ public class MusicListActivity extends ActionBarActivity {
     TextView selectMusicInfo = null;
 
     String filePath = null;
-    String fileTitle = null;
+    String fileName = null;
     String fileArtist = null;
+    String fileTitle = null;
+    String fileAlbum = null;
 
     private ListView mListView;
     private MusicAdapter mMusicAdapter;
@@ -58,21 +60,22 @@ public class MusicListActivity extends ActionBarActivity {
 
         mListView.setAdapter(mMusicAdapter);
 
-        System.out.println("1");
         /* Listener for selecting a item */
         mListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 
                 // 음악파일 제목, 가수 정보 저장
-                fileTitle = mMusicAdapter.getTitle(position);
+                fileName = mMusicAdapter.getName(position);
                 fileArtist = mMusicAdapter.getSinger(position);
+                fileAlbum = mMusicAdapter.getAlbum(position);
+                fileTitle = mMusicAdapter.getTitle(position);
 
                 //선택된 곡의 정보를 toast message로 보여준다.
                 Toast.makeText(getApplicationContext(), "\""+fileArtist+"\"의 "
-                        + "\""+fileTitle+"\"" + " 곡이 선택되었습니다.", Toast.LENGTH_SHORT).show();
+                        + "\""+fileName+"\"" + " 곡이 선택되었습니다.", Toast.LENGTH_SHORT).show();
 
                 //선택된곡 알려줌
-                selectMusicInfo.setText("선택된곡 : "+ fileTitle + "-" + fileArtist);
+                selectMusicInfo.setText("선택된곡 : "+ fileName + "-" + fileArtist);
 
                 //음악파일을 보낸다.
                 Uri musicURI = Uri.withAppendedPath(
@@ -92,8 +95,10 @@ public class MusicListActivity extends ActionBarActivity {
                 //변수 정보 보내기
                 Intent intent = getIntent();
                 intent.putExtra("filepath", filePath);
-                intent.putExtra("title" , fileTitle );
+                intent.putExtra("name" , fileName );
                 intent.putExtra("artist", fileArtist);
+                intent.putExtra("album", fileAlbum);
+                intent.putExtra("title", fileTitle);
                 setResult(RESULT_OK,intent);
                 finish();
             }
@@ -162,13 +167,17 @@ public class MusicListActivity extends ActionBarActivity {
             return Integer.parseInt((mMusicIDList.get(position)));
         }
 
-        public String getTitle(int position){
+        public String getName(int position){
             return mMusiceTitleList.get(position);
         }
 
         public String getSinger(int position){
             return mSingerList.get(position);
         }
+
+        public String getAlbum(int position) { return mAlbumartIDList.get(position); }
+
+        public String getTitle(int position) { return mMusiceTitleList.get(position); }
 
         public View getView(int position, View convertView, ViewGroup parent) {
             View listViewItem = convertView;

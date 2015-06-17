@@ -15,4 +15,13 @@
         android:layout_weight="0.03"
          />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="설정"
+        android:id="@+id/settingbtn"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.03"
+        android:onClick="onSettingButtonClicked" />
+
 </LinearLayout>
