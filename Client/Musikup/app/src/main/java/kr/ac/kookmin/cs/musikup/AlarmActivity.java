@@ -38,7 +38,7 @@ public class AlarmActivity extends Activity {
     AlarmManager mAlarmMgr;
     Dialog customDialog;
     TimePicker timePicker;
-    Button setAlarmBtn, cancelAlarmBtn, selectBtn, selectSeedBtn, setBtn, exitBtn;
+    Button setAlarmBtn, cancelAlarmBtn, selectBtn, setBtn, exitBtn;
     ToggleButton toggleSun, toggleMon, toggleTue, toggleWed, toggleThu, toggleFri, toggleSat;
     String[] weekday = {"일","월","화","수","목","금","토"};
     boolean[] week;
@@ -180,11 +180,11 @@ public class AlarmActivity extends Activity {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHour);
         calendar.set(Calendar.MINUTE, mMinute-1);
-        calendar.set(Calendar.MILLISECOND, 30000);
+        calendar.set(Calendar.MILLISECOND, 20000);
 
         edit.putInt("hour",mHour);
         edit.putInt("minute",mMinute-1);
-        edit.putInt("millisecond", 30000);
+        edit.putInt("millisecond", 20000);
         edit.commit();
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -201,7 +201,7 @@ public class AlarmActivity extends Activity {
         edit.clear();
         edit.commit();
         mTimeDisplay.setText("");
-        mSeedSongDisplay.setText(pref.getString("title", "")+ pref.getString("artist", ""));
+        mSeedSongDisplay.setText("");
     }
 
     private void updateDisplay() {
@@ -221,7 +221,7 @@ public class AlarmActivity extends Activity {
                 str.append(" "+weekday[i-1]);
         }
         mTimeDisplay.setText(str);
-        mSeedSongDisplay.setText(pref.getString("title", null) + "-" + pref.getString("artist",null));
+        mSeedSongDisplay.setText(pref.getString("title", "") + "-" + pref.getString("artist",""));
     }
 
     private static String pad(int c) {
@@ -248,12 +248,19 @@ public class AlarmActivity extends Activity {
     }
 
     public void pushSeedInfo(){ //push Seed Info
+
         ServerRequest sr = new ServerRequest();
         List<NameValuePair> seedInfo = new ArrayList<NameValuePair>();
         seedInfo.add(new BasicNameValuePair("title", title));
         seedInfo.add(new BasicNameValuePair("artist", artist));
-
-        JSONObject json = sr.getJSON("http://52.68.250.226:3000/music/search",seedInfo); //send id,pwd info
+        JSONObject json;
+//
+//        try {
+//            UrlEncodedFormEntity ent = new UrlEncodedFormEntity(seedInfo, HTTP.UTF_8);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
+        json = sr.getJSON("http://52.68.250.226:3000/music/search",seedInfo); //send id,pwd info
         if(json != null){
             try{
                 String jsonstr = json.getString("response");
@@ -263,7 +270,7 @@ public class AlarmActivity extends Activity {
                     String reTitle = json.getString("title");
                     String reArtist = json.getString("artist");
                     edit.putString("reTitle",reTitle);
-                    edit.putString("reArtist",reArtist);
+                    edit.putString("reArtist", reArtist);
                     edit.commit();
                 }
                 else{                   //보나셀 서버에 seed 정보 없으면
