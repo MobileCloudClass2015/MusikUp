@@ -228,7 +228,7 @@ public class AlarmActivity extends Activity {
                 str.append(" "+weekday[i-1]);
         }
         mTimeDisplay.setText(str);
-        mSeedSongDisplay.setText(pref.getString("title", "") + "-" + pref.getString("artist",""));
+        mSeedSongDisplay.setText(pref.getString("title", "") + " - " + pref.getString("artist",""));
     }
 
     private static String pad(int c) {
@@ -261,15 +261,10 @@ public class AlarmActivity extends Activity {
         seedInfo.add(new BasicNameValuePair("title", title));
         seedInfo.add(new BasicNameValuePair("artist", artist));
         JSONObject json;
-//
-//        try {
-//            UrlEncodedFormEntity ent = new UrlEncodedFormEntity(seedInfo, HTTP.UTF_8);
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
+
         json = sr.getJSON("http://52.68.250.226:3000/music/search",seedInfo); //send id,pwd info
         if(json != null){
-            System.out.println(json);
+            System.out.println("받았다"+json);
             try{
                 String jsonstr = json.getString("response");
 
@@ -283,7 +278,41 @@ public class AlarmActivity extends Activity {
                     edit.commit();
                 }
                 else{                   //보나셀 서버에 seed 정보 없으면
-                    //sendSeedFile();
+                    showMessage("Seed File을 전송하고 있습니다. 잠시만 기다리세요.");
+                    System.out.println("sendSeedFile func");
+                    sendSeedFile();
+                }
+
+                showMessage(jsonstr);
+
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void askRecomInfo(){ //ReAsk Recommend Music Info
+
+        ServerRequest sr = new ServerRequest();
+        List<NameValuePair> seedInfo = new ArrayList<NameValuePair>();
+        seedInfo.add(new BasicNameValuePair("title", title));
+        seedInfo.add(new BasicNameValuePair("artist", artist));
+        JSONObject json;
+
+        json = sr.getJSON("http://52.68.250.226:3000/music/feature",seedInfo); //send id,pwd info
+        if(json != null){
+            System.out.println("받았다"+json);
+            try{
+                String jsonstr = json.getString("response");
+
+                if(json.getBoolean("res")){         //보나셀 서버에 seed 정보 있으면 서버에서 추천음악 정보를 줌
+                    //prepare ULR // Recommand Music
+
+                    String reTitle = json.getString("title");
+                    String reArtist = json.getString("artist");
+                    edit.putString("reTitle",reTitle);
+                    edit.putString("reArtist", reArtist);
+                    edit.commit();
                 }
 
                 showMessage(jsonstr);
@@ -298,6 +327,7 @@ public class AlarmActivity extends Activity {
     }
 
     public void sendSeedFile(){
+
         Thread work = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -383,6 +413,11 @@ public class AlarmActivity extends Activity {
         });
 
         work.start();
+
+        if(!work.isAlive()) {
+            showMessage("File 전송이 완료되었습니다.");
+            askRecomInfo();
+        }
     }
 
     private void showMessage(String msg) {

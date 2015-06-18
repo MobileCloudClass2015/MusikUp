@@ -36,8 +36,8 @@ public class AlarmPopupActivity extends Activity {
     static MediaPlayer mPlayer;
     Button buttonPlay;
     Button buttonStop;
-    String url = "http://android.programmerguru.com/wp-content/uploads/2013/04/hosannatelugu.mp3";
-    //"http://52.68.250.226:3000/home/unbroutes/img/1434611210300.mp3"
+  //  String url = "http://android.programmerguru.com/wp-content/uploads/2013/04/hosannatelugu.mp3";
+    String url = "http://52.68.250.226:3000/img?name=song";
 
 
     @Override
