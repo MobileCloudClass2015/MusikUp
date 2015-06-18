@@ -3,14 +3,16 @@ package kr.ac.kookmin.cs.musikup;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -29,7 +31,14 @@ public class AlarmPopupActivity extends Activity {
     private final Handler handler = new Handler();
     boolean btnCheck;
 
-    private StreamingMediaPlayer audioStreamer;
+   // private StreamingMediaPlayer audioStreamer;
+
+    static MediaPlayer mPlayer;
+    Button buttonPlay;
+    Button buttonStop;
+    String url = "http://android.programmerguru.com/wp-content/uploads/2013/04/hosannatelugu.mp3";
+    //"http://52.68.250.226:3000/home/unbroutes/img/1434611210300.mp3"
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,15 +80,56 @@ public class AlarmPopupActivity extends Activity {
             }
         });
 
+
+        buttonPlay = (Button) findViewById(R.id.play);
+        buttonPlay.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                mPlayer = new MediaPlayer();
+                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                try {
+                    mPlayer.setDataSource(url);
+                } catch (IllegalArgumentException e) {
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (SecurityException e) {
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (IllegalStateException e) {
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    mPlayer.prepare();
+                } catch (IllegalStateException e) {
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+                }
+                mPlayer.start();
+            }
+        });
+
+        buttonStop = (Button) findViewById(R.id.stop);
+        buttonStop.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                if(mPlayer!=null && mPlayer.isPlaying()){
+                    mPlayer.stop();
+                }
+            }
+        });
+
+
     }
 
-    private void initControls() {
-        startStreamingAudio();
-
-        audioStreamer.getMediaPlayer().start();
-        audioStreamer.startPlayProgressUpdater();
-
-    }
+//    private void initControls() {
+//        startStreamingAudio();
+//
+//        audioStreamer.getMediaPlayer().start();
+//        audioStreamer.startPlayProgressUpdater();
+//
+//    }
 
 
     public void alarmTimeStart() {
@@ -142,18 +192,27 @@ public class AlarmPopupActivity extends Activity {
             return "0" + String.valueOf(c);
     }
 
-    private void startStreamingAudio() {
-        try {
-            if ( audioStreamer != null) {
-                audioStreamer.interrupt();
-            }
-            audioStreamer = new StreamingMediaPlayer(this);
-            //audioStreamer.startStreaming("http://www.pocketjourney.com/downloads/pj/tutorials/audio.mp3",1717, 214);
-            audioStreamer.startStreaming("http://internet.chonbuk.ac.kr/~songwei/DD/tellme.mp3",5208, 216);
-        } catch (IOException e) {
-            Log.e(getClass().getName(), "Error starting to stream audio.", e);
+//    private void startStreamingAudio() {
+//        try {
+//            if ( audioStreamer != null) {
+//                audioStreamer.interrupt();
+//            }
+//            audioStreamer = new StreamingMediaPlayer(this);
+//            //audioStreamer.startStreaming("http://www.pocketjourney.com/downloads/pj/tutorials/audio.mp3",1717, 214);
+//            audioStreamer.startStreaming("http://internet.chonbuk.ac.kr/~songwei/DD/tellme.mp3",5208, 216);
+//        } catch (IOException e) {
+//            Log.e(getClass().getName(), "Error starting to stream audio.", e);
+//        }
+//    }
+
+
+    protected void onDestroy() {
+        super.onDestroy();
+        // TODO Auto-generated method stub
+        if (mPlayer != null) {
+            mPlayer.release();
+            mPlayer = null;
         }
     }
-
 
 }
