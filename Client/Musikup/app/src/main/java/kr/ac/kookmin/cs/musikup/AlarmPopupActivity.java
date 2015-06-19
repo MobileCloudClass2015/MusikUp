@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -39,11 +38,29 @@ public class AlarmPopupActivity extends Activity {
   //  String url = "http://android.programmerguru.com/wp-content/uploads/2013/04/hosannatelugu.mp3";
     String url = "http://52.68.250.226:3000/img?name=song";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = this.getSharedPreferences("AlarmTable", Context.MODE_PRIVATE);
+
+
+        mPlayer = new MediaPlayer();
+        mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mPlayer.setDataSource(url);
+        } catch (IllegalArgumentException e) {
+        } catch (SecurityException e) {
+        } catch (IllegalStateException e) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            mPlayer.prepare();
+        } catch (IllegalStateException e) {
+        } catch (IOException e) {
+        }
+        mPlayer.start();
+
 
         requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
@@ -74,50 +91,53 @@ public class AlarmPopupActivity extends Activity {
         exitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mPlayer!=null && mPlayer.isPlaying()){
+                    mPlayer.stop();
+                }
                 btnCheck=true; //for TimerTask cancel
                 finish();
             }
         });
 
-
-        buttonPlay = (Button) findViewById(R.id.play);
-        buttonPlay.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                mPlayer = new MediaPlayer();
-                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                try {
-                    mPlayer.setDataSource(url);
-                } catch (IllegalArgumentException e) {
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (SecurityException e) {
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (IllegalStateException e) {
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    mPlayer.prepare();
-                } catch (IllegalStateException e) {
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                } catch (IOException e) {
-                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
-                }
-                mPlayer.start();
-            }
-        });
-
-        buttonStop = (Button) findViewById(R.id.stop);
-        buttonStop.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                if(mPlayer!=null && mPlayer.isPlaying()){
-                    mPlayer.stop();
-                }
-            }
-        });
+//
+//        buttonPlay = (Button) findViewById(R.id.play);
+//        buttonPlay.setOnClickListener(new View.OnClickListener() {
+//
+//            public void onClick(View v) {
+//                mPlayer = new MediaPlayer();
+//                mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+//                try {
+//                    mPlayer.setDataSource(url);
+//                } catch (IllegalArgumentException e) {
+//                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+//                } catch (SecurityException e) {
+//                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+//                } catch (IllegalStateException e) {
+//                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//                try {
+//                    mPlayer.prepare();
+//                } catch (IllegalStateException e) {
+//                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+//                } catch (IOException e) {
+//                    Toast.makeText(getApplicationContext(), "You might not set the URI correctly!", Toast.LENGTH_LONG).show();
+//                }
+//                mPlayer.start();
+//            }
+//        });
+//
+//        buttonStop = (Button) findViewById(R.id.stop);
+//        buttonStop.setOnClickListener(new View.OnClickListener() {
+//
+//            public void onClick(View v) {
+//                // TODO Auto-generated method stub
+//                if(mPlayer!=null && mPlayer.isPlaying()){
+//                    mPlayer.stop();
+//                }
+//            }
+//        });
     }
 
     public void alarmTimeStart() {
@@ -169,6 +189,7 @@ public class AlarmPopupActivity extends Activity {
 
         if(hour>12){
             hour -= 12;
+            am_pm = "PM";
         }
         System.out.println(year+"-"+pad(month+1)+"-"+pad(day)+" "+am_pm+" "+pad(hour)+":"+pad(minute));
         today.setText(year+"-"+pad(month+1)+"-"+pad(day)+" "+am_pm+" "+pad(hour)+":"+pad(minute)); //2015-06-11 PM 12:02

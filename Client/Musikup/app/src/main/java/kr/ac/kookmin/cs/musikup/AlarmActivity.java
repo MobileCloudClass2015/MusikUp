@@ -21,9 +21,11 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -181,11 +183,11 @@ public class AlarmActivity extends Activity {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHour);
         calendar.set(Calendar.MINUTE, mMinute - 1);
-        calendar.set(Calendar.MILLISECOND, 20000);
+        calendar.set(Calendar.MILLISECOND, 18000);
 
         edit.putInt("hour", mHour);
         edit.putInt("minute", mMinute - 1);
-        edit.putInt("millisecond", 20000);
+        edit.putInt("millisecond", 18000);
         edit.commit();
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, mIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -314,9 +316,10 @@ public class AlarmActivity extends Activity {
         Thread work = new Thread(new Runnable() {
             @Override
             public void run() {
+
                 try {
                     url = new URL("http://52.68.250.226:3000/upload");
-                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection = (HttpURLConnection) url.openConnection(); // HTTP ����
 
                     urlConnection.setDoInput(true);
                     urlConnection.setDoOutput(true);
@@ -359,12 +362,12 @@ public class AlarmActivity extends Activity {
                     FileInputStream filestream = new FileInputStream(path);
 
                     int bytesAvailable = filestream.available();
-                    int bufsize = Math.min(bytesAvailable, 1024 * 32);
+                    int bufsize = Math.min(bytesAvailable, 1024 * 64);
                     byte[] buff = new byte[bufsize];
                     while (filestream.read(buff, 0, bufsize) > 0) {
                         out.write(buff, 0, bufsize);
                         bytesAvailable = filestream.available();
-                        bufsize = Math.min(bytesAvailable, 1024 * 32);
+                        bufsize = Math.min(bytesAvailable, 1024 * 64);
                     }
 
                     out.writeBytes("\r\n");
@@ -374,6 +377,17 @@ public class AlarmActivity extends Activity {
                     out.flush();
                     out.close();
 
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+
+                    int data;
+                    String result = "";
+                    while ((data = in.read()) != -1) {
+                        result += (char) data;
+                    }
+                    Log.i("mytag", result);
+                    in.close();
+
+                    //Toast.makeText(getApplicationContext(), "recv data : " + result, Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

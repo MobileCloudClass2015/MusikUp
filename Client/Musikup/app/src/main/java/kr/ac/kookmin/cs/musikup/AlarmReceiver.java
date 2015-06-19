@@ -46,7 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 week = intent.getBooleanArrayExtra("weekday");
                 System.out.println("요일설정완료");
             }
-            System.out.println(week[calendar.get(Calendar.DAY_OF_WEEK)]);
+            //System.out.println(week[calendar.get(Calendar.DAY_OF_WEEK)]);
             if (!week[calendar.get(Calendar.DAY_OF_WEEK)]) //Sunday=1, Monday=2... Saturday=7
                 return; //false Check Day doesn't execute Alarm Popup Activity
 
