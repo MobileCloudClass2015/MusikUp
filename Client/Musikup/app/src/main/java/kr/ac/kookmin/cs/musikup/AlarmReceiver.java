@@ -20,9 +20,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Calendar calendar = Calendar.getInstance();
 
         if(pref.getInt("minute",-1)!=-1) { //알람이 있는 경우만 실행
-            System.out.println("알람실행!!");
             if("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) { //재부팅시
-                System.out.println("잉?????재부팅?");
                 //Time Set
                 int minute = pref.getInt("minute", -1);
                 int hour = pref.getInt("hour", -1);

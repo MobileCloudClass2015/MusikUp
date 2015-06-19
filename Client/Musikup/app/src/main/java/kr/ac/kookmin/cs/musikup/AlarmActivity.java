@@ -21,11 +21,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,10 +41,10 @@ public class AlarmActivity extends Activity {
     TimePicker timePicker;
     Button setAlarmBtn, cancelAlarmBtn, selectBtn, setBtn, exitBtn;
     ToggleButton toggleSun, toggleMon, toggleTue, toggleWed, toggleThu, toggleFri, toggleSat;
-    String[] weekday = {"일","월","화","수","목","금","토"};
+    String[] weekday = {"일", "월", "화", "수", "목", "금", "토"};
     boolean[] week;
     TextView mTimeDisplay, mSeedSongDisplay;
-    int mHour, mMinute=-1;
+    int mHour, mMinute = -1;
 
     String musicFilePath = null;
     String artist = null;
@@ -70,23 +68,22 @@ public class AlarmActivity extends Activity {
         setAlarmBtn = (Button) findViewById(R.id.setAlarmButton);
         cancelAlarmBtn = (Button) findViewById(R.id.cancelAlarmButton);
 
-        if(pref.getInt("minute",-1)!=-1){ //이미 알람이 등록 되어 있을 경우 알람 설정 내용을 보여준다.
-          //  mSeedSongDisplay.setText(pref.getString("title", null) + "-" + pref.getString("artist",null));
+        if (pref.getInt("minute", -1) != -1) { //이미 알람이 등록 되어 있을 경우 알람 설정 내용을 보여준다.
+            //  mSeedSongDisplay.setText(pref.getString("title", null) + "-" + pref.getString("artist",null));
             updateDisplay();
         }
         ButtonHandler();
 
     }
 
-    public void ButtonHandler(){
+    public void ButtonHandler() {
 
         setAlarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (pref.getInt("minute", -1) != -1) {
                     showMessage("이미 알람이 존재합니다.");
-                }
-                else {
+                } else {
                     init(); //Dialog init
 
                     /*Dialog Button Listener*/
@@ -107,19 +104,18 @@ public class AlarmActivity extends Activity {
                                     toggleWed.isChecked(), toggleThu.isChecked(), toggleFri.isChecked(), toggleSat.isChecked()};
                             week = weekCheck;
 
-                            edit.putBoolean("Sun",toggleSun.isChecked());
-                            edit.putBoolean("Mon",toggleMon.isChecked());
-                            edit.putBoolean("Tue",toggleTue.isChecked());
-                            edit.putBoolean("Wed",toggleWed.isChecked());
-                            edit.putBoolean("Thu",toggleThu.isChecked());
-                            edit.putBoolean("Fri",toggleFri.isChecked());
-                            edit.putBoolean("Sat",toggleSat.isChecked());
+                            edit.putBoolean("Sun", toggleSun.isChecked());
+                            edit.putBoolean("Mon", toggleMon.isChecked());
+                            edit.putBoolean("Tue", toggleTue.isChecked());
+                            edit.putBoolean("Wed", toggleWed.isChecked());
+                            edit.putBoolean("Thu", toggleThu.isChecked());
+                            edit.putBoolean("Fri", toggleFri.isChecked());
+                            edit.putBoolean("Sat", toggleSat.isChecked());
                             edit.commit();
 
                             Intent intent = new Intent(mContext, AlarmReceiver.class);
                             intent.putExtra("weekday", weekCheck); //put Checked weekday
                             SetAlarm(intent);
-                            System.out.println(mHour + ":" + mMinute);
 
                             updateDisplay();
 
@@ -142,16 +138,15 @@ public class AlarmActivity extends Activity {
         cancelAlarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(pref.getInt("minute",-1)!=-1){
+                if (pref.getInt("minute", -1) != -1) {
                     CancelAlarm();
-                }
-                else    showMessage("해제할 알람이 없습니다.");
+                } else showMessage("해제할 알람이 없습니다.");
             }
         });
 
     }
 
-    private void init(){
+    private void init() {
 
         customDialog = new Dialog(mContext);   //create CustomDialog
         customDialog.setContentView(R.layout.custom_dialog);
@@ -173,8 +168,8 @@ public class AlarmActivity extends Activity {
         exitBtn = (Button) customDialog.findViewById(R.id.cancelBtn);
     }
 
-   TimePicker.OnTimeChangedListener mTimeChangedListener=
-            new TimePicker.OnTimeChangedListener(){
+    TimePicker.OnTimeChangedListener mTimeChangedListener =
+            new TimePicker.OnTimeChangedListener() {
                 @Override
                 public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                     mHour = hourOfDay;
@@ -182,15 +177,14 @@ public class AlarmActivity extends Activity {
                 }
             };
 
-    public void SetAlarm(Intent mIntent)
-    {
+    public void SetAlarm(Intent mIntent) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, mHour);
-        calendar.set(Calendar.MINUTE, mMinute-1);
+        calendar.set(Calendar.MINUTE, mMinute - 1);
         calendar.set(Calendar.MILLISECOND, 20000);
 
-        edit.putInt("hour",mHour);
-        edit.putInt("minute",mMinute-1);
+        edit.putInt("hour", mHour);
+        edit.putInt("minute", mMinute - 1);
         edit.putInt("millisecond", 20000);
         edit.commit();
 
@@ -198,11 +192,10 @@ public class AlarmActivity extends Activity {
         mAlarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 
-    public void CancelAlarm()
-    {
+    public void CancelAlarm() {
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent sender = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(sender);
         sender.cancel();
         edit.clear();
@@ -213,48 +206,48 @@ public class AlarmActivity extends Activity {
 
     private void updateDisplay() {
         String am_pm = "오전";
-        int hour = pref.getInt("hour",-1);
+        int hour = pref.getInt("hour", -1);
         int minute = pref.getInt("minute", -1);
-        if(hour>12) {
+        if (hour > 12) {
             am_pm = "오후";
             hour -= 12;
         }
-        StringBuilder str = new StringBuilder().append(am_pm+" ").append(pad(hour)).append(":").append(pad(minute+1)).append(" /");
+        StringBuilder str = new StringBuilder().append(am_pm + " ").append(pad(hour)).append(":").append(pad(minute + 1)).append(" /");
 
-        boolean[] w = {false, pref.getBoolean("Sun",false),pref.getBoolean("Mon",false),pref.getBoolean("Tue",false),pref.getBoolean("Wed",false),
-                pref.getBoolean("Thu",false),pref.getBoolean("Fri",false),pref.getBoolean("Sat",false)};
-        for(int i=1; i<w.length; i++){
-            if(w[i])
-                str.append(" "+weekday[i-1]);
+        boolean[] w = {false, pref.getBoolean("Sun", false), pref.getBoolean("Mon", false), pref.getBoolean("Tue", false), pref.getBoolean("Wed", false),
+                pref.getBoolean("Thu", false), pref.getBoolean("Fri", false), pref.getBoolean("Sat", false)};
+        for (int i = 1; i < w.length; i++) {
+            if (w[i])
+                str.append(" " + weekday[i - 1]);
         }
         mTimeDisplay.setText(str);
-        mSeedSongDisplay.setText(pref.getString("title", "") + " - " + pref.getString("artist",""));
+        mSeedSongDisplay.setText(pref.getString("title", "") + " - " + pref.getString("artist", ""));
     }
 
     private static String pad(int c) {
-        if(c >= 10){
+        if (c >= 10) {
             return String.valueOf(c);
-        }else
+        } else
             return "0" + String.valueOf(c);
     }
 
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
+        if (resultCode == RESULT_OK) {
             musicFilePath = data.getStringExtra("filepath");
             artist = data.getStringExtra("artist");
             title = data.getStringExtra("filename");
-            edit.putString("title",title);
-            edit.putString("artist",artist);
+            edit.putString("title", title);
+            edit.putString("artist", artist);
             edit.commit();
             selectBtn.setText(title + "-" + artist);
 
-         //   sendSeedFile();
+            //   sendSeedFile();
         }
     }
 
-    public void pushSeedInfo(){ //push Seed Info
+    public void pushSeedInfo() { //push Seed Info
 
         ServerRequest sr = new ServerRequest();
         List<NameValuePair> seedInfo = new ArrayList<NameValuePair>();
@@ -262,76 +255,65 @@ public class AlarmActivity extends Activity {
         seedInfo.add(new BasicNameValuePair("artist", artist));
         JSONObject json;
 
-        json = sr.getJSON("http://52.68.250.226:3000/music/search",seedInfo); //send id,pwd info
-        if(json != null){
-            System.out.println("받았다"+json);
-            try{
+        json = sr.getJSON("http://52.68.250.226:3000/music/search", seedInfo); //send id,pwd info
+        if (json != null) {
+            System.out.println("받았다" + json);
+            try {
                 String jsonstr = json.getString("response");
 
-                if(json.getBoolean("res")){         //보나셀 서버에 seed 정보 있으면 서버에서 추천음악 정보를 줌
-                   //prepare ULR // Recommand Music
-
+                if (json.getBoolean("res")) {         //보나셀 서버에 seed 정보 있으면 서버에서 추천음악 정보를 줌
                     String reTitle = json.getString("title");
                     String reArtist = json.getString("artist");
-                    edit.putString("reTitle",reTitle);
+                    edit.putString("reTitle", reTitle);
                     edit.putString("reArtist", reArtist);
                     edit.commit();
-                }
-                else{                   //보나셀 서버에 seed 정보 없으면
-                    showMessage("Seed File을 전송하고 있습니다. 잠시만 기다리세요.");
-                    System.out.println("sendSeedFile func");
+                    showMessage("알람이 설정 되었습니다.");
+                } else {                   //보나셀 서버에 seed 정보 없으면
                     sendSeedFile();
                 }
+               // showMessage(jsonstr);
 
-                showMessage(jsonstr);
-
-            }catch (JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void askRecomInfo(){ //ReAsk Recommend Music Info
-
+    public void askRecomInfo() { //ReAsk Recommend Music Info
+        showMessage("File 전송이 완료되었습니다.");
+        System.out.println("askRecomInfo 실행");
         ServerRequest sr = new ServerRequest();
         List<NameValuePair> seedInfo = new ArrayList<NameValuePair>();
         seedInfo.add(new BasicNameValuePair("title", title));
         seedInfo.add(new BasicNameValuePair("artist", artist));
         JSONObject json;
 
-        json = sr.getJSON("http://52.68.250.226:3000/music/feature",seedInfo); //send id,pwd info
-        if(json != null){
-            System.out.println("받았다"+json);
-            try{
+        json = sr.getJSON("http://52.68.250.226:3000/music/feature", seedInfo); //send id,pwd info
+        if (json != null) {
+            System.out.println("재요청" + json);
+            try {
                 String jsonstr = json.getString("response");
 
-                if(json.getBoolean("res")){         //보나셀 서버에 seed 정보 있으면 서버에서 추천음악 정보를 줌
-                    //prepare ULR // Recommand Music
-
+                if (json.getBoolean("res")) {         //Musikup 서버에 재요청
                     String reTitle = json.getString("title");
                     String reArtist = json.getString("artist");
-                    edit.putString("reTitle",reTitle);
+                    edit.putString("reTitle", reTitle);
                     edit.putString("reArtist", reArtist);
                     edit.commit();
+                    showMessage("알람이 설정 되었습니다.");
                 }
 
-                showMessage(jsonstr);
-
-            }catch (JSONException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
-
-
     }
 
-    public void sendSeedFile(){
-
+    public void sendSeedFile() { //보나쉘 DB에 곡이 없을 때 사용자의 MP3파일을 Musikup 서버에 보냄 (특성화벡터추출 위해)
+        showMessage("Seed File을 전송하고 있습니다. 잠시만 기다리세요.");
         Thread work = new Thread(new Runnable() {
             @Override
             public void run() {
-
                 try {
                     url = new URL("http://52.68.250.226:3000/upload");
                     urlConnection = (HttpURLConnection) url.openConnection();
@@ -392,17 +374,6 @@ public class AlarmActivity extends Activity {
                     out.flush();
                     out.close();
 
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-
-                    int data;
-                    String result = "";
-                    while ((data = in.read()) != -1) {
-                        result += (char) data;
-                    }
-                    Log.i("mytag", result);
-                    in.close();
-
-                    //Toast.makeText(getApplicationContext(), "recv data : " + result, Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -411,12 +382,14 @@ public class AlarmActivity extends Activity {
             }
 
         });
-
         work.start();
 
-        if(!work.isAlive()) {
-            showMessage("File 전송이 완료되었습니다.");
-            askRecomInfo();
+        try{
+           work.join(); //Thread 종료 후, 즉 파일 전송이 완료되고 쓰레드가 종료되면
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            askRecomInfo(); //추천곡 재요청
         }
     }
 

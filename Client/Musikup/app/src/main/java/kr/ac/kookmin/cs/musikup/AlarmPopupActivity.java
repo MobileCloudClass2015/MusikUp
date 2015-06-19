@@ -57,7 +57,6 @@ public class AlarmPopupActivity extends Activity {
 
         System.out.println("popup!!!!!!!!!!!!!!");
 
-        //initControls();
         init();
         alarmTimeStart();
 
@@ -119,18 +118,7 @@ public class AlarmPopupActivity extends Activity {
                 }
             }
         });
-
-
     }
-
-//    private void initControls() {
-//        startStreamingAudio();
-//
-//        audioStreamer.getMediaPlayer().start();
-//        audioStreamer.startPlayProgressUpdater();
-//
-//    }
-
 
     public void alarmTimeStart() {
         timer_text = (TextView) findViewById(R.id.msg);
@@ -191,20 +179,6 @@ public class AlarmPopupActivity extends Activity {
         }else
             return "0" + String.valueOf(c);
     }
-
-//    private void startStreamingAudio() {
-//        try {
-//            if ( audioStreamer != null) {
-//                audioStreamer.interrupt();
-//            }
-//            audioStreamer = new StreamingMediaPlayer(this);
-//            //audioStreamer.startStreaming("http://www.pocketjourney.com/downloads/pj/tutorials/audio.mp3",1717, 214);
-//            audioStreamer.startStreaming("http://internet.chonbuk.ac.kr/~songwei/DD/tellme.mp3",5208, 216);
-//        } catch (IOException e) {
-//            Log.e(getClass().getName(), "Error starting to stream audio.", e);
-//        }
-//    }
-
 
     protected void onDestroy() {
         super.onDestroy();
